@@ -9,12 +9,13 @@ patch, but there are more required changes to the disk layout.
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 ---
- lib/blkid/probe.h          |    1 +
- lib/ext2fs/ext2_ext_attr.h |    4 +++-
- lib/ext2fs/ext2_fs.h       |   40 ++++++++++++++++++++++++++++++++++++++--
- lib/ext2fs/ext2fs.h        |    1 +
- lib/ext2fs/ext3_extents.h  |   11 +++++++++++
- 5 files changed, 54 insertions(+), 3 deletions(-)
+ lib/blkid/probe.h           |    1 +
+ lib/ext2fs/ext2_ext_attr.h  |    4 +++-
+ lib/ext2fs/ext2_fs.h        |   40 ++++++++++++++++++++++++++++++++++++++--
+ lib/ext2fs/ext2fs.h         |    1 +
+ lib/ext2fs/ext3_extents.h   |   11 +++++++++++
+ lib/ext2fs/tst_super_size.c |    2 +-
+ 6 files changed, 55 insertions(+), 4 deletions(-)
 
 diff --git a/lib/blkid/probe.h b/lib/blkid/probe.h
 index 37e80ef..d6809e1 100644
@@ -177,6 +178,16 @@ index 88fabc9..4163436 100644
   * this is extent on-disk structure
   * it's used at the bottom of the tree
   */
--- 
-1.7.9.107.g97f9a
-
+diff --git a/lib/ext2fs/tst_super_size.c b/lib/ext2fs/tst_super_size.c
+index 6593652..601e41e 100644
+--- a/lib/ext2fs/tst_super_size.c
++++ b/lib/ext2fs/tst_super_size.c
+@@ -105,7 +105,7 @@ void check_superblock_fields()
+ 	check_field(s_mmp_block);
+ 	check_field(s_raid_stripe_width);
+ 	check_field(s_log_groups_per_flex);
+-	check_field(s_reserved_char_pad);
++	check_field(s_checksum_type);
+ 	check_field(s_reserved_pad);
+ 	check_field(s_kbytes_written);
+ 	check_field(s_snapshot_inum);
