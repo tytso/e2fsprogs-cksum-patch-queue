@@ -1,8 +1,6 @@
-From 007168000b61af43b6849e688c6b0eca0fc3d1bb Mon Sep 17 00:00:00 2001
+tune2fs: Force MMP update when changing metadata_csum flag
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:28 -0800
-Subject: [PATCH 43/54] tune2fs: Force MMP update when changing metadata_csum
- flag
 
 When changing the metadata_csum flag, always force out a new MMP block.
 

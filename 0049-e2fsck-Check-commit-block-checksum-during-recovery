@@ -1,7 +1,6 @@
-From aae8ff1744c67eaa50005364ae05f5080010f2a4 Mon Sep 17 00:00:00 2001
+e2fsck: Check commit block checksum during recovery
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:10 -0800
-Subject: [PATCH 49/54] e2fsck: Check commit block checksum during recovery
 
 When recovering a journal with checksum v2, verify the commit block checksum.
 

@@ -1,8 +1,6 @@
-From ff74c6024b59ba5df1630cca3c5d0e97ae62854c Mon Sep 17 00:00:00 2001
+mke2fs: Allow metadata checksums to be turned on at mkfs time
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 09/54] mke2fs: Allow metadata checksums to be turned on at
- mkfs time
 
 Write out reserved inodes with full checksums when writing out a zeroed table.
 

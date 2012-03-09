@@ -1,8 +1,6 @@
-From be6b42fc179a620cdb053503c7d1c21926886656 Mon Sep 17 00:00:00 2001
+libext2fs: Verify and calculate extent tree block checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 19/54] libext2fs: Verify and calculate extent tree block
- checksums
 
 Verify and calculate extent tree block checksums when processing filesystems.
 

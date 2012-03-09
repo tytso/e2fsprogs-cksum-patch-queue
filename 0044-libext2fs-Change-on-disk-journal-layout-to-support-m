@@ -1,8 +1,6 @@
-From 5dacc21b759dacf458c1235e2ae7f1c751c9edea Mon Sep 17 00:00:00 2001
+libext2fs: Change on-disk journal layout to support metadata checksumming
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:35 -0800
-Subject: [PATCH 44/54] libext2fs: Change on-disk journal layout to support
- metadata checksumming
 
 Define flags and change journal structure definitions to support v2 journal
 checksumming.

@@ -1,8 +1,6 @@
-From 3009e983e8275e5b7988c52f2c7ae259a721fca6 Mon Sep 17 00:00:00 2001
+libext2fs: Verify and calculate extended attribute block checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 28/54] libext2fs: Verify and calculate extended attribute
- block checksums
 
 Calculate and verify the checksum for separate (i.e. not in the inode) extended
 attribute blocks; the checksum lives in the header.

@@ -1,8 +1,6 @@
-From 2cf54acda0a2f63d712747a9f3dc06d6ad6a29b8 Mon Sep 17 00:00:00 2001
+mke2fs: Warn if not enabling all the features that metadata_csum wants
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:07 -0800
-Subject: [PATCH 40/54] mke2fs: Warn if not enabling all the features that
- metadata_csum wants
 
 The metadata_csum feature works best when two features are enabled.  These
 features are "extents" (because the block map has no space for checksums) and

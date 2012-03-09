@@ -1,8 +1,6 @@
-From c025ca8db374d186b74f2cddc169a73df24ea1f4 Mon Sep 17 00:00:00 2001
+e2fsck: Check descriptor block checksum when recovering journal
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:03 -0800
-Subject: [PATCH 48/54] e2fsck: Check descriptor block checksum when
- recovering journal
 
 Verify the descriptor block checksum when recovering a journal.
 

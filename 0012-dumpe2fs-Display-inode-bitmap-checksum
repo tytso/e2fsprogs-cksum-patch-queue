@@ -1,7 +1,6 @@
-From 252d4c78c0bafda30874d091f359f3b6cb8ec715 Mon Sep 17 00:00:00 2001
+dumpe2fs: Display inode bitmap checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 12/54] dumpe2fs: Display inode bitmap checksum
 
 Display the inode bitmap checksum for each block group.
 

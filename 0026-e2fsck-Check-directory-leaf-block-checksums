@@ -1,7 +1,6 @@
-From ee708a1cbe1e2bf1a2a683ed094f6933ae1c9e86 Mon Sep 17 00:00:00 2001
+e2fsck: Check directory leaf block checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:50 -0500
-Subject: [PATCH 26/54] e2fsck: Check directory leaf block checksums
 
 Checks that directory leaf blocks have the necessary fake dir_entry at the end
 of the block to hold a checksum and that the checksum is valid.  It will resize

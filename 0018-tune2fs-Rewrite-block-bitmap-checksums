@@ -1,7 +1,6 @@
-From afee6a5694a99217e47dfcb377d08ab5a7c0c5df Mon Sep 17 00:00:00 2001
+tune2fs: Rewrite block bitmap checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 18/54] tune2fs: Rewrite block bitmap checksums
 
 When toggling metadata_csum, mark the block bitmap dirty so that it gets
 written with new checksums.

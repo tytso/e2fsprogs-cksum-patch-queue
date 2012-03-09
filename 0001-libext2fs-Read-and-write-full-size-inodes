@@ -1,7 +1,6 @@
-From 66459f2664ffb2fca24ae82124a048bbfacd2107 Mon Sep 17 00:00:00 2001
+libext2fs: Read and write full size inodes
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:47 -0500
-Subject: [PATCH 01/54] libext2fs: Read and write full size inodes
 
 Change libext2fs to read and write full-size inodes in preparation for the
 metadata checksumming patchset, which will require this.  Due to ABI

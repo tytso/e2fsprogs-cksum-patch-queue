@@ -1,7 +1,6 @@
-From ec51782a671358b21d547b37c9fdc0a258fe1b9b Mon Sep 17 00:00:00 2001
+debugfs: Dump inode checksum when appropriate
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 06/54] debugfs: Dump inode checksum when appropriate
 
 Dump inode checksum when displaying inode info
 

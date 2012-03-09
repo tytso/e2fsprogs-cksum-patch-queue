@@ -1,7 +1,6 @@
-From 9352e4288dddffbc331c4798ff469fd97d3f3c13 Mon Sep 17 00:00:00 2001
+e2fsck: Verify htree root/node checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:50 -0500
-Subject: [PATCH 24/54] e2fsck: Verify htree root/node checksums
 
 Check htree internal node checksums.  If broken, ask user to clear the htree
 index and recreate it later.

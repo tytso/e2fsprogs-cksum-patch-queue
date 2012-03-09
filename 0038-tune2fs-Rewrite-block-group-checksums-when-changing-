@@ -1,8 +1,6 @@
-From e5a8be6ff942af94ed1602d1023543267aab7280 Mon Sep 17 00:00:00 2001
+tune2fs: Rewrite block group checksums when changing checksumming feature flags
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:52 -0500
-Subject: [PATCH 38/54] tune2fs: Rewrite block group checksums when changing
- checksumming feature flags
 
 When toggling the metadata_csum and uninit_bg feature flags, we should rewrite
 the block groups with the desired checksum.

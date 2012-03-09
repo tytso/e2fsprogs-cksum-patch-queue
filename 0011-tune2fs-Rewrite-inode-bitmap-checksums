@@ -1,7 +1,6 @@
-From 34c2951289af4feaab1681f9a6dc645b55777d1f Mon Sep 17 00:00:00 2001
+tune2fs: Rewrite inode bitmap checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 11/54] tune2fs: Rewrite inode bitmap checksums
 
 When toggling metadata_csum, mark the inode bitmap dirty so that they are
 written out with new checksums.

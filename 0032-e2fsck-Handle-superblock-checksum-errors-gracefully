@@ -1,7 +1,6 @@
-From 8dbca9430388b5682e3702215d2c8718daded1ca Mon Sep 17 00:00:00 2001
+e2fsck: Handle superblock checksum errors gracefully
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 32/54] e2fsck: Handle superblock checksum errors gracefully
 
 If e2fsck finds a superblock with an invalid checksum, try the backups.
 

@@ -1,8 +1,6 @@
-From d616c4d8aeb0ebba992ba8f2765637024481f9d1 Mon Sep 17 00:00:00 2001
+mke2fs: Write new group descriptors with the appropriate checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:01 -0800
-Subject: [PATCH 39/54] mke2fs: Write new group descriptors with the
- appropriate checksum
 
 Update mke2fs to use the helper function to determine if group descriptors
 should have checksums calculated.  Since metadata_csum supersedes uninit_bg,

@@ -1,7 +1,6 @@
-From e0e6f106e63af78ed136091ef57f885a3392d28b Mon Sep 17 00:00:00 2001
+tune2fs: Enable extent tree checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 20/54] tune2fs: Enable extent tree checksums
 
 Add to tune2fs the ability to recalculate extent tree checksums when altering
 the metadata checksum feature flag.

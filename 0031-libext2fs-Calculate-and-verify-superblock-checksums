@@ -1,7 +1,6 @@
-From d1e222616d07889da487cbaf8662ec24c0d3e656 Mon Sep 17 00:00:00 2001
+libext2fs: Calculate and verify superblock checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 31/54] libext2fs: Calculate and verify superblock checksums
 
 Calculate and verify the superblock checksums.  Each copy of the superblock
 records the number of the group it's in and the FS UUID, so we can simply

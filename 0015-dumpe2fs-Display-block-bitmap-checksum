@@ -1,7 +1,6 @@
-From 84d740d078abd1dd1d36329280afdfb04a296e67 Mon Sep 17 00:00:00 2001
+dumpe2fs: Display block bitmap checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 15/54] dumpe2fs: Display block bitmap checksum
 
 Display the block bitmap checksum when displaying block groups.
 

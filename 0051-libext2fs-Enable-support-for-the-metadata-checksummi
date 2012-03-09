@@ -1,8 +1,6 @@
-From 7721f2f11fe2ee9c6cc01fb25ccb31756dd0b537 Mon Sep 17 00:00:00 2001
+libext2fs: Enable support for the metadata checksumming feature
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:24 -0800
-Subject: [PATCH 51/54] libext2fs: Enable support for the metadata
- checksumming feature
 
 Add metadata checksumming to the list of supported features.
 

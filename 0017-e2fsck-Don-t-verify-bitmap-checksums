@@ -1,7 +1,6 @@
-From 62f6dd84f2ae8f5539e0e107e83010cc0e1673a5 Mon Sep 17 00:00:00 2001
+e2fsck: Don't verify bitmap checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 17/54] e2fsck: Don't verify bitmap checksums
 
 Since the correct inode and block bitmaps are calculated in pass 5, don't fail
 the bitmap read operation in prior passes since (a) incorrect results won't

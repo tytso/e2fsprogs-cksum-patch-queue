@@ -1,8 +1,6 @@
-From 02bb68b8cd4a487a6daad7703ccbc2f430fc0e09 Mon Sep 17 00:00:00 2001
+e2fsck: Ensure block group checksum uses metadata_csum algorithm
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:52 -0500
-Subject: [PATCH 37/54] e2fsck: Ensure block group checksum uses metadata_csum
- algorithm
 
 Use the helper function to determine if group descriptors have a checksum.
 Ensure that metadata_csum and uninit_bg flags are not set simultaneously, as

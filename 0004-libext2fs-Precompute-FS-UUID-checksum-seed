@@ -1,7 +1,6 @@
-From ecd4416c46336414e4c3816353c4e930ee8c3da3 Mon Sep 17 00:00:00 2001
+libext2fs: Precompute FS UUID checksum seed
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:47 -0500
-Subject: [PATCH 04/54] libext2fs: Precompute FS UUID checksum seed
 
 Precompute the FS UUID checksum seed that is used for all metadata checksumming
 operations and store it in ext2_filsys.

@@ -1,7 +1,6 @@
-From 80027720b5c44781774dbdc42c922d217218cd54 Mon Sep 17 00:00:00 2001
+e2fsck: Verify and correct inode checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 08/54] e2fsck: Verify and correct inode checksums
 
 Detect mismatches of the inode and checksum, and prompt the user to fix the
 situation.

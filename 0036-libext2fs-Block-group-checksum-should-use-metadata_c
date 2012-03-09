@@ -1,8 +1,6 @@
-From 52f60162023e29cbb32037547bb3f41ef8e282e9 Mon Sep 17 00:00:00 2001
+libext2fs: Block group checksum should use metadata_csum algorithm
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:52 -0500
-Subject: [PATCH 36/54] libext2fs: Block group checksum should use
- metadata_csum algorithm
 
 Change the block group algorithm to use the same algorithm as the rest of the
 metadata_csum.  This mostly involves providing a helper function to tell if

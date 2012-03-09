@@ -1,8 +1,6 @@
-From 1342a391783b3b575eb07706509ad53b22311edb Mon Sep 17 00:00:00 2001
+e2fsck: Verify data block checksums when recovering journal
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:17 -0800
-Subject: [PATCH 50/54] e2fsck: Verify data block checksums when recovering
- journal
 
 Check the data block checksums when recovering the journal.
 

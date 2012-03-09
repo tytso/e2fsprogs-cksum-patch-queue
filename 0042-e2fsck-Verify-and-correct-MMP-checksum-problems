@@ -1,7 +1,6 @@
-From 10f7a495219213c138498f3523e9119297277260 Mon Sep 17 00:00:00 2001
+e2fsck: Verify and correct MMP checksum problems
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:22 -0800
-Subject: [PATCH 42/54] e2fsck: Verify and correct MMP checksum problems
 
 Check and handle MMP checksum problems by resetting the block.
 

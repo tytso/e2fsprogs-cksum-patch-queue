@@ -1,7 +1,6 @@
-From 0a7d4e5be801fbb7bf297f5c78c7c7e194a2d0df Mon Sep 17 00:00:00 2001
+e2fsck: Check revoke block checksum during recovery
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:55 -0800
-Subject: [PATCH 47/54] e2fsck: Check revoke block checksum during recovery
 
 Verify the revoke block checksum when recovering the journal.
 

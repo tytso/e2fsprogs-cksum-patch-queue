@@ -1,7 +1,6 @@
-From 2e2e893f7e4100a3afebd3603d90936008e271e4 Mon Sep 17 00:00:00 2001
+libext2fs: Dump feature flags for jbd2 v2 checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:42 -0800
-Subject: [PATCH 45/54] libext2fs: Dump feature flags for jbd2 v2 checksums
 
 Modify the dump code to print information about jbd2 v2 checksum data.
 

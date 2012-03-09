@@ -1,7 +1,6 @@
-From 813d8ced2995d129f8daa424abcb633642b88ff2 Mon Sep 17 00:00:00 2001
+tune2fs: Add inode checksum support
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:48 -0500
-Subject: [PATCH 07/54] tune2fs: Add inode checksum support
 
 This patch adds to tune2fs the ability to toggle the metadata checksum rocompat
 feature flag, which will rewrite the inode table with checksums.  Disallow

@@ -1,7 +1,6 @@
-From c55f7f2bb0984306c506bf02a949549965785627 Mon Sep 17 00:00:00 2001
+mke2fs: Enable metadata_csum on ext4dev filesystems
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:44 -0800
-Subject: [PATCH 54/54] mke2fs: Enable metadata_csum on ext4dev filesystems
 
 Enable full-power metadata checksumming by default on 'ext4dev' filesystems.
 This should be fairly safe for now, since only developers should be using this

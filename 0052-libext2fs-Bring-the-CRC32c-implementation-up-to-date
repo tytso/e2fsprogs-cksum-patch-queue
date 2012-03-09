@@ -1,8 +1,6 @@
-From d934ae98edc36356999786b75178bfd4c4ce7263 Mon Sep 17 00:00:00 2001
+libext2fs: Bring the CRC32c implementation up to date with the kernel implementation
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:30 -0800
-Subject: [PATCH 52/54] libext2fs: Bring the CRC32c implementation up to date
- with the kernel implementation
 
 The crc32c implementation in the kernel has been refactored a bit to reduce the
 amount of code that needs to be maintained, and to speed up tune2fs/e2fsck on

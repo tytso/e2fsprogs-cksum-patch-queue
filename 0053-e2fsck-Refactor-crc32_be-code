@@ -1,7 +1,6 @@
-From f97eb0bc70cae72545b56e5e46ddb34013bf6807 Mon Sep 17 00:00:00 2001
+e2fsck: Refactor crc32_be code
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:03:37 -0800
-Subject: [PATCH 53/54] e2fsck: Refactor crc32_be code
 
 Remove crc32_be in favor of the implementation in libext2fs.
 

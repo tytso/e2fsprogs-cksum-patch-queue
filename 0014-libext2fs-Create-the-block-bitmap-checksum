@@ -1,7 +1,6 @@
-From 8946545a815b93f2321c34ee154bd3ffb3c2ebe8 Mon Sep 17 00:00:00 2001
+libext2fs: Create the block bitmap checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 14/54] libext2fs: Create the block bitmap checksum
 
 Calculate and verify the block bitmap checksum.
 

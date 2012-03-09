@@ -1,7 +1,6 @@
-From cc1db3649c5c81df2f3af5bfc6f9c019fe2e1491 Mon Sep 17 00:00:00 2001
+debugfs: Optionally ignore bad checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:47 -0500
-Subject: [PATCH 03/54] debugfs: Optionally ignore bad checksums
 
 If someone is debugging a badly damaged filesystem, it might be useful to
 disable the checksum verifications that will otherwise prevent the filesystem

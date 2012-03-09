@@ -1,7 +1,6 @@
-From 5de58f80d0fbce83bc1155578e1a53d78fda7d9e Mon Sep 17 00:00:00 2001
+e2fsck: Verify inode bitmap checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 13/54] e2fsck: Verify inode bitmap checksum
 
 Rewrite the block bitmap when the checksum doesn't match.  This is ok since
 e2fsck will have already computed the correct inode bitmap.

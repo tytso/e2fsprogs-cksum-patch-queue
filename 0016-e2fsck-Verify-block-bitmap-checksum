@@ -1,7 +1,6 @@
-From df5b59ee2aafae72b7f5d42cbca84c73ec4f2d9c Mon Sep 17 00:00:00 2001
+e2fsck: Verify block bitmap checksum
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:49 -0500
-Subject: [PATCH 16/54] e2fsck: Verify block bitmap checksum
 
 Check block bitmap checksum and write a new checksum if the verification fails.
 This is ok because e2fsck has already computed the correct block bitmap.

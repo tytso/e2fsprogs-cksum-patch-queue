@@ -1,8 +1,6 @@
-From ec808e0a797dc86ac5cc7bd4bfb71c1e52c62b81 Mon Sep 17 00:00:00 2001
+e2fsck: Check journal superblock checksum prior to recovery
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:48 -0800
-Subject: [PATCH 46/54] e2fsck: Check journal superblock checksum prior to
- recovery
 
 Ensure that the journal superblock passes checksum before recovering the
 filesystem.

@@ -1,8 +1,6 @@
-From bd3b5f48b04a63cc814fd0b3966e4765ff9837cd Mon Sep 17 00:00:00 2001
+mke2fs: Record the checksum algorithm in use in the superblock
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 35/54] mke2fs: Record the checksum algorithm in use in the
- superblock
 
 Record the type of checksum algorithm we're using for metadata in the
 superblock when creating a filesystem.

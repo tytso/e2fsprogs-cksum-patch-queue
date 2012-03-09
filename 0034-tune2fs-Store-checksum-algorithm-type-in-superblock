@@ -1,7 +1,6 @@
-From e1d95a817e1df2cc2ddbb1108100016003ae9219 Mon Sep 17 00:00:00 2001
+tune2fs: Store checksum algorithm type in superblock
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 34/54] tune2fs: Store checksum algorithm type in superblock
 
 Actually records the checksum algorithm type in the superblock when enabling
 checksumming.

@@ -1,8 +1,6 @@
-From 45b5bf63938e386f3bcbbcd262975760ea5b37c0 Mon Sep 17 00:00:00 2001
+libext2fs: Record the checksum algorithm in use in the superblock
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 33/54] libext2fs: Record the checksum algorithm in use in the
- superblock
 
 Record the type of checksum algorithm we're using for metadata in the
 superblock, in case we ever want/need to change the algorithm.

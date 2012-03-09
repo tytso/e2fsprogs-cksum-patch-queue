@@ -1,7 +1,6 @@
-From 4f9155aa81ab0611b88da578dcde310ca7f93d51 Mon Sep 17 00:00:00 2001
+tune2fs: Rewrite extended attribute block checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:51 -0500
-Subject: [PATCH 30/54] tune2fs: Rewrite extended attribute block checksums
 
 When enabling metadata checksums, rewrite separate extended attribute blocks.
 

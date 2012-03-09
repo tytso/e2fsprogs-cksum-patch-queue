@@ -1,7 +1,6 @@
-From c8ea127fe0aca40dbdf4bf1ec9e9d71a6a1c629c Mon Sep 17 00:00:00 2001
+libext2fs: Add checksum to MMP block
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Tue, 6 Mar 2012 16:02:15 -0800
-Subject: [PATCH 41/54] libext2fs: Add checksum to MMP block
 
 Calculate and verify a checksum of the MMP block.
 

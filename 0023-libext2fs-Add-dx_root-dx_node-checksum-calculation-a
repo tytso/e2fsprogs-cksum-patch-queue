@@ -1,8 +1,6 @@
-From 822579f6a779585ee020facb42d0264d86992d16 Mon Sep 17 00:00:00 2001
+libext2fs: Add dx_root/dx_node checksum calculation and verification helpers
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:50 -0500
-Subject: [PATCH 23/54] libext2fs: Add dx_root/dx_node checksum calculation
- and verification helpers
 
 Verify and calculate checksums of htree internal node blocks.
 

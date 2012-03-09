@@ -1,8 +1,6 @@
-From 384bf7eb5e4990c9ea52ebb70c977f986e9ac309 Mon Sep 17 00:00:00 2001
+tune2fs: Rebuild and checksum directories when toggling metadata_csum or changing UUID
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:50 -0500
-Subject: [PATCH 27/54] tune2fs: Rebuild and checksum directories when
- toggling metadata_csum or changing UUID
 
 Since all the metadata checksums depend on the fs UUID, tune2fs must be able to
 rewrite the checksums of _all_ metadata.  It's not that hard to add in the bits

@@ -1,7 +1,6 @@
-From d1ed73461862e549891a336e24e27a967ee63857 Mon Sep 17 00:00:00 2001
+debugfs: Print htree internal node checksums
+
 From: "Darrick J. Wong" <djwong@us.ibm.com>
-Date: Fri, 9 Mar 2012 16:21:50 -0500
-Subject: [PATCH 22/54] debugfs: Print htree internal node checksums
 
 Print htree node checksums when dumping a directory index.
 
