@@ -43,7 +43,7 @@ index 729d5c5..4db0ae9 100644
  
  /* Function prototypes */
 diff --git a/lib/ext2fs/inode.c b/lib/ext2fs/inode.c
-index 6c524ff..a4f6670 100644
+index 6c524ff..adb2324 100644
 --- a/lib/ext2fs/inode.c
 +++ b/lib/ext2fs/inode.c
 @@ -74,7 +74,9 @@ errcode_t ext2fs_flush_icache(ext2_filsys fs)
@@ -266,7 +266,7 @@ index 6c524ff..a4f6670 100644
 -			return retval;
 +			goto errout;
  	}
-+	memcpy(w_inode, inode, bufsize);
++	memcpy(w_inode, inode, (bufsize > length) ? length : bufsize);
  
 -	if (!(fs->flags & EXT2_FLAG_RW))
 -		return EXT2_ET_RO_FILSYS;
@@ -323,6 +323,3 @@ index 6c524ff..a4f6670 100644
  	return retval;
  }
  
--- 
-1.7.9.107.g97f9a
-
