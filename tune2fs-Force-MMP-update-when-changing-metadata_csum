@@ -1,4 +1,4 @@
-tune2fs: Force MMP update when changing metadata_csum flag
+tune2fs: force MMP update when changing metadata_csum flag
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

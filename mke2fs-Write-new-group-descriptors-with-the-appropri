@@ -1,11 +1,11 @@
-mke2fs: Write new group descriptors with the appropriate checksum
+mke2fs: write new group descriptors with the appropriate checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Update mke2fs to use the helper function to determine if group descriptors
-should have checksums calculated.  Since metadata_csum supersedes uninit_bg,
-quietly drop uninit_bg if metadata_csum is set, so that older kernels don't
-get confused.
+Update mke2fs to use the helper function to determine if group
+descriptors should have checksums calculated.  Since metadata_csum
+supersedes uninit_bg, quietly drop uninit_bg if metadata_csum is set,
+so that older kernels don't get confused.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

@@ -1,4 +1,4 @@
-libext2fs: Change on-disk journal layout to support metadata checksumming
+libext2fs: change on-disk journal layout to support metadata checksumming
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

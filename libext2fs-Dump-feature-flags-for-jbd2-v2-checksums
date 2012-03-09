@@ -1,4 +1,4 @@
-libext2fs: Dump feature flags for jbd2 v2 checksums
+libext2fs: dump feature flags for jbd2 v2 checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

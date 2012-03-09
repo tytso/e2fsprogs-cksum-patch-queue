@@ -1,9 +1,9 @@
-e2fsck: Verify htree root/node checksums
+e2fsck: verify htree root/node checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Check htree internal node checksums.  If broken, ask user to clear the htree
-index and recreate it later.
+Check htree internal node checksums.  If broken, ask user to clear the
+htree index and recreate it later.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

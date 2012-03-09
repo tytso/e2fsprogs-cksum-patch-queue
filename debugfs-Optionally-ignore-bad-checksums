@@ -1,10 +1,10 @@
-debugfs: Optionally ignore bad checksums
+debugfs: optionally ignore bad checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-If someone is debugging a badly damaged filesystem, it might be useful to
-disable the checksum verifications that will otherwise prevent the filesystem
-from loading.
+If someone is debugging a badly damaged filesystem, it might be useful
+to disable the checksum verifications that will otherwise prevent the
+filesystem from loading.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

@@ -1,9 +1,9 @@
-libext2fs: Precompute FS UUID checksum seed
+libext2fs: precompute FS UUID checksum seed
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Precompute the FS UUID checksum seed that is used for all metadata checksumming
-operations and store it in ext2_filsys.
+Precompute the FS UUID checksum seed that is used for all metadata
+checksumming operations and store it in ext2_filsys.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

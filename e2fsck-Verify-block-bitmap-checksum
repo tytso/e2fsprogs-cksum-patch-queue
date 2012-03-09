@@ -1,9 +1,10 @@
-e2fsck: Verify block bitmap checksum
+e2fsck: verify block bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Check block bitmap checksum and write a new checksum if the verification fails.
-This is ok because e2fsck has already computed the correct block bitmap.
+Check block bitmap checksum and write a new checksum if the
+verification fails.  This is ok because e2fsck has already computed
+the correct block bitmap.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

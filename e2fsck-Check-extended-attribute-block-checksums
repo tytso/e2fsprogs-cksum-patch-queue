@@ -1,9 +1,9 @@
-e2fsck: Check extended attribute block checksums
+e2fsck: check extended attribute block checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Verify the checksums of separate extended attribute blocks and offer to clear
-it if there is a mismatch.
+Verify the checksums of separate extended attribute blocks and offer
+to clear it if there is a mismatch.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

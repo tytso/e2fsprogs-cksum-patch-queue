@@ -1,10 +1,10 @@
-libext2fs: Change ext4 on-disk layout to support metadata checksumming
+libext2fs: change ext4 on-disk layout to support metadata checksumming
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
 Define flags and extend ext4 structure definitions to support metadata
-checksumming.  Ted T'so covered many of these fields in an earlier patch, but
-there are more required changes to the disk layout.
+checksumming.  Ted Ts'o covered many of these fields in an earlier
+patch, but there are more required changes to the disk layout.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

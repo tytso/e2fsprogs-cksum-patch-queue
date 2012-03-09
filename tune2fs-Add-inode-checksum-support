@@ -1,11 +1,11 @@
-tune2fs: Add inode checksum support
+tune2fs: add inode checksum support
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-This patch adds to tune2fs the ability to toggle the metadata checksum rocompat
-feature flag, which will rewrite the inode table with checksums.  Disallow
-changing the UUID while the fs is mounted, because rewriting the metadata
-objects is racy.
+This patch adds to tune2fs the ability to toggle the metadata checksum
+rocompat feature flag, which will rewrite the inode table with
+checksums.  Disallow changing the UUID while the fs is mounted,
+because rewriting the metadata objects is racy.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

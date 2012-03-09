@@ -1,4 +1,4 @@
-libext2fs: Enable support for the metadata checksumming feature
+libext2fs: enable support for the metadata checksumming feature
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

@@ -1,9 +1,9 @@
-tune2fs: Enable extent tree checksums
+tune2fs: enable extent tree checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Add to tune2fs the ability to recalculate extent tree checksums when altering
-the metadata checksum feature flag.
+Add to tune2fs the ability to recalculate extent tree checksums when
+altering the metadata checksum feature flag.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

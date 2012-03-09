@@ -1,8 +1,9 @@
-tune2fs: Rewrite extended attribute block checksums
+tune2fs: rewrite extended attribute block checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-When enabling metadata checksums, rewrite separate extended attribute blocks.
+When enabling metadata checksums, rewrite separate extended attribute
+blocks.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

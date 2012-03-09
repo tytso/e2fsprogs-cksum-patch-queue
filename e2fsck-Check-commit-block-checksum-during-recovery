@@ -1,8 +1,9 @@
-e2fsck: Check commit block checksum during recovery
+e2fsck: check commit block checksum during recovery
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-When recovering a journal with checksum v2, verify the commit block checksum.
+When recovering a journal with checksum v2, verify the commit block
+checksum.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

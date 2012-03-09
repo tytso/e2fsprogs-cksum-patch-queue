@@ -1,4 +1,4 @@
-e2fsck: Check journal superblock checksum prior to recovery
+e2fsck: check journal superblock checksum prior to recovery
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

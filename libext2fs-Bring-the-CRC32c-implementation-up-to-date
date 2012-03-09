@@ -1,12 +1,12 @@
-libext2fs: Bring the CRC32c implementation up to date with the kernel implementation
+libext2fs: optimize the CRC32c implementation
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-The crc32c implementation in the kernel has been refactored a bit to reduce the
-amount of code that needs to be maintained, and to speed up tune2fs/e2fsck on
-PowerPC by 5-10%.  Port the crc32c changes over, and provide a crc32_be so that
-we can remove the duplicate functionality from e2fsck.  Also drop crc32c_be and
-crc32_le since neither got used.
+The crc32c implementation in the kernel has been refactored a bit to
+reduce the amount of code that needs to be maintained, and to speed up
+tune2fs/e2fsck on PowerPC by 5-10%.  Port the crc32c changes over, and
+provide a crc32_be so that we can remove the duplicate functionality
+from e2fsck.  Also drop crc32c_be and crc32_le since neither got used.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

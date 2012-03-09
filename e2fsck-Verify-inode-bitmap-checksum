@@ -1,9 +1,9 @@
-e2fsck: Verify inode bitmap checksum
+e2fsck: verify inode bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Rewrite the block bitmap when the checksum doesn't match.  This is ok since
-e2fsck will have already computed the correct inode bitmap.
+Rewrite the block bitmap when the checksum doesn't match.  This is ok
+since e2fsck will have already computed the correct inode bitmap.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

@@ -1,4 +1,4 @@
-debugfs: Print htree internal node checksums
+debugfs: print htree internal node checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

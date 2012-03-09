@@ -1,10 +1,11 @@
-e2fsck: Verify extent tree blocks and clear the bad ones
+e2fsck: verify extent tree blocks and clear the bad ones
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-When we encounter an extent tree block that passes the header check but fails
-the checksum, offer to clear just that extent block instead of failing the
-whole tree, which results in the entire inode being wiped out.
+When we encounter an extent tree block that passes the header check
+but fails the checksum, offer to clear just that extent block instead
+of failing the whole tree, which results in the entire inode being
+wiped out.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

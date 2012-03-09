@@ -1,4 +1,4 @@
-libext2fs: Add dx_root/dx_node checksum calculation and verification helpers
+libext2fs: add dx_root/dx_node checksum calculation and verification helpers
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

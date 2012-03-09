@@ -1,4 +1,4 @@
-e2fsck: Verify and correct MMP checksum problems
+e2fsck: verify and correct MMP checksum problems
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

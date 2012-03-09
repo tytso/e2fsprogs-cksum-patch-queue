@@ -1,10 +1,11 @@
-libext2fs: Read and write full size inodes
+libext2fs: read and write full size inodes
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Change libext2fs to read and write full-size inodes in preparation for the
-metadata checksumming patchset, which will require this.  Due to ABI
-compatibility requirements, this change must be hidden from client programs.
+Change libext2fs to read and write full-size inodes in preparation for
+the metadata checksumming patchset, which will require this.  Due to
+ABI compatibility requirements, this change must be hidden from client
+programs.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

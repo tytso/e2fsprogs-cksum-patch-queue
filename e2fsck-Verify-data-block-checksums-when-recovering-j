@@ -1,4 +1,4 @@
-e2fsck: Verify data block checksums when recovering journal
+e2fsck: verify data block checksums when recovering journal
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

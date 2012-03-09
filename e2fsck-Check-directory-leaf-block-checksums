@@ -1,10 +1,11 @@
-e2fsck: Check directory leaf block checksums
+e2fsck: check directory leaf block checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Checks that directory leaf blocks have the necessary fake dir_entry at the end
-of the block to hold a checksum and that the checksum is valid.  It will resize
-the block and/or rebuild the directory if necessary.
+Checks that directory leaf blocks have the necessary fake dir_entry at
+the end of the block to hold a checksum and that the checksum is
+valid.  It will resize the block and/or rebuild the directory if
+necessary.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

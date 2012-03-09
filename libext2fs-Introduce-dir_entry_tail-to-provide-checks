@@ -1,9 +1,10 @@
-libext2fs: Introduce dir_entry_tail to provide checksums for directory leaf nodes
+libext2fs: add checksums to the end of directory leaf nodes
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Introduce small structures for recording directory tree checksums, and some API
-changes to support writing out directory blocks with checksums.
+Introduce small structures for recording directory tree checksums, and
+some API changes to support writing out directory blocks with
+checksums.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

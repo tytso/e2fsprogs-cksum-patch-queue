@@ -1,12 +1,12 @@
-mke2fs: Warn if not enabling all the features that metadata_csum wants
+mke2fs: warn if not enabling all the features that metadata_csum wants
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-The metadata_csum feature works best when two features are enabled.  These
-features are "extents" (because the block map has no space for checksums) and
-"64bit" (this enables storage of full 32-bit checksums in certain fields).
-Print a warning if the user tries to create a filesystem without those
-features.
+The metadata_csum feature works best when two features are enabled.
+These features are "extents" (because the block map has no space for
+checksums) and "64bit" (this enables storage of full 32-bit checksums
+in certain fields).  Print a warning if the user tries to create a
+filesystem without those features.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

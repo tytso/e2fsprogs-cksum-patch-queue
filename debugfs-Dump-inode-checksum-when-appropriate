@@ -1,8 +1,8 @@
-debugfs: Dump inode checksum when appropriate
+debugfs: dump inode checksum when appropriate
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Dump inode checksum when displaying inode info
+Dump inode checksum when displaying inode info.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

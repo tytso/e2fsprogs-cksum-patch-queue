@@ -1,4 +1,4 @@
-libext2fs: Create the block bitmap checksum
+libext2fs: create the block bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

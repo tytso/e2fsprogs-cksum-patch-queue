@@ -1,10 +1,10 @@
-e2fsck: Ensure block group checksum uses metadata_csum algorithm
+e2fsck: ensure block group checksum uses metadata_csum algorithm
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Use the helper function to determine if group descriptors have a checksum.
-Ensure that metadata_csum and uninit_bg flags are not set simultaneously, as
-part of pass 0.
+Use the helper function to determine if group descriptors have a
+checksum.  Ensure that metadata_csum and uninit_bg flags are not set
+simultaneously, as part of pass 0.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

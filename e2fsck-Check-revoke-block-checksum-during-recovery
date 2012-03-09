@@ -1,4 +1,4 @@
-e2fsck: Check revoke block checksum during recovery
+e2fsck: check revoke block checksum during recovery
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

@@ -1,4 +1,4 @@
-e2fsck: Check descriptor block checksum when recovering journal
+e2fsck: check descriptor block checksum when recovering journal
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

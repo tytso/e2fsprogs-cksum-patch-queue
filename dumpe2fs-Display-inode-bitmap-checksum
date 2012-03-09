@@ -1,4 +1,4 @@
-dumpe2fs: Display inode bitmap checksum
+dumpe2fs: display inode bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

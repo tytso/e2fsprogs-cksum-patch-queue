@@ -1,4 +1,4 @@
-dumpe2fs: Display block bitmap checksum
+dumpe2fs: display block bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

@@ -1,4 +1,4 @@
-e2fsck: Refactor crc32_be code
+e2fsck: refactor crc32_be code
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

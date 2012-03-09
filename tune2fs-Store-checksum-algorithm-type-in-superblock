@@ -1,9 +1,9 @@
-tune2fs: Store checksum algorithm type in superblock
+tune2fs: store checksum algorithm type in superblock
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Actually records the checksum algorithm type in the superblock when enabling
-checksumming.
+Actually records the checksum algorithm type in the superblock when
+enabling checksumming.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

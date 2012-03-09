@@ -1,4 +1,4 @@
-libext2fs: Add checksum to MMP block
+libext2fs: add checksum to MMP block
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

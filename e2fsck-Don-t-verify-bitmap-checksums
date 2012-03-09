@@ -1,10 +1,11 @@
-e2fsck: Don't verify bitmap checksums
+e2fsck: don't verify bitmap checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Since the correct inode and block bitmaps are calculated in pass 5, don't fail
-the bitmap read operation in prior passes since (a) incorrect results won't
-kill us and (b) if we fail early, we'll never _get_ to pass 5.
+Since the correct inode and block bitmaps are calculated in pass 5,
+don't fail the bitmap read operation in prior passes since (a)
+incorrect results won't kill us and (b) if we fail early, we'll never
+_get_ to pass 5.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

@@ -1,8 +1,9 @@
-e2fsck: Handle superblock checksum errors gracefully
+e2fsck: handle superblock checksum errors gracefully
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-If e2fsck finds a superblock with an invalid checksum, try the backups.
+If e2fsck finds a superblock with an invalid checksum, try the
+backups.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

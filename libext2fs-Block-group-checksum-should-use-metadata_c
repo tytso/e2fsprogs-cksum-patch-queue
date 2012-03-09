@@ -1,11 +1,12 @@
-libext2fs: Block group checksum should use metadata_csum algorithm
+libext2fs: block group checksum should use metadata_csum algorithm
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Change the block group algorithm to use the same algorithm as the rest of the
-metadata_csum.  This mostly involves providing a helper function to tell if
-group descriptors should have checksums set or verified, and modifying the gdt
-checksum code to use the correct algorithm.
+Change the block group algorithm to use the same algorithm as the rest
+of the metadata_csum.  This mostly involves providing a helper
+function to tell if group descriptors should have checksums set or
+verified, and modifying the gdt checksum code to use the correct
+algorithm.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

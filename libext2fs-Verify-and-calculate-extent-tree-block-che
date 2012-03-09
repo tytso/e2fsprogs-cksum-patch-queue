@@ -1,8 +1,9 @@
-libext2fs: Verify and calculate extent tree block checksums
+libext2fs: verify and calculate extent tree block checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Verify and calculate extent tree block checksums when processing filesystems.
+Verify and calculate extent tree block checksums when processing
+filesystems.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

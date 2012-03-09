@@ -1,9 +1,9 @@
-e2fsck: Verify and correct inode checksums
+e2fsck: verify and correct inode checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Detect mismatches of the inode and checksum, and prompt the user to fix the
-situation.
+Detect mismatches of the inode and checksum, and prompt the user to
+fix the situation.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

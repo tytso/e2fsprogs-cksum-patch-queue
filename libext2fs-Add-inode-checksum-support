@@ -1,9 +1,9 @@
-libext2fs: Add inode checksum support
+libext2fs: add inode checksum support
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-This patch adds the ability for the libext2fs functions to read and write the
-inode checksum.
+This patch adds the ability for the libext2fs functions to read and
+write the inode checksum.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

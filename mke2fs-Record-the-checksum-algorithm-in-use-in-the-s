@@ -1,4 +1,4 @@
-mke2fs: Record the checksum algorithm in use in the superblock
+mke2fs: record the checksum algorithm in use in the superblock
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 

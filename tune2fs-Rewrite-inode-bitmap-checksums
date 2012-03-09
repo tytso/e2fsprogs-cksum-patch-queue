@@ -1,9 +1,9 @@
-tune2fs: Rewrite inode bitmap checksums
+tune2fs: rewrite inode bitmap checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-When toggling metadata_csum, mark the inode bitmap dirty so that they are
-written out with new checksums.
+When toggling metadata_csum, mark the inode bitmap dirty so that they
+are written out with new checksums.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

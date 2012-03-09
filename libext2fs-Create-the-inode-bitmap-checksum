@@ -1,9 +1,9 @@
-libext2fs: Create the inode bitmap checksum
+libext2fs: create the inode bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Provide a field in the block group descriptor to store inode bitmap checksum,
-and some helper functions to calculate and verify it.
+Provide a field in the block group descriptor to store inode bitmap
+checksum, and some helper functions to calculate and verify it.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>

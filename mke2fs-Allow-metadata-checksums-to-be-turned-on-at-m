@@ -1,8 +1,9 @@
-mke2fs: Allow metadata checksums to be turned on at mkfs time
+mke2fs: allow metadata checksums to be turned on at mkfs time
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Write out reserved inodes with full checksums when writing out a zeroed table.
+Write out reserved inodes with full checksums when writing out a
+zeroed table.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
