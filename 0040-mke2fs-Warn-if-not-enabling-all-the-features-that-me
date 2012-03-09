@@ -1,0 +1,51 @@
+From 2cf54acda0a2f63d712747a9f3dc06d6ad6a29b8 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Tue, 6 Mar 2012 16:02:07 -0800
+Subject: [PATCH 40/54] mke2fs: Warn if not enabling all the features that
+ metadata_csum wants
+
+The metadata_csum feature works best when two features are enabled.  These
+features are "extents" (because the block map has no space for checksums) and
+"64bit" (this enables storage of full 32-bit checksums in certain fields).
+Print a warning if the user tries to create a filesystem without those
+features.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/mke2fs.c |   19 +++++++++++++++++++
+ 1 files changed, 19 insertions(+), 0 deletions(-)
+
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index 1716255..c9b2e8f 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -2309,6 +2309,25 @@ int main (int argc, char *argv[])
+ 		exit(1);
+ 	}
+ 
++	/* Check the user's mkfs options for metadata checksumming */
++	if (!quiet &&
++	    EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++				       EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)) {
++		if (!EXT2_HAS_INCOMPAT_FEATURE(fs->super,
++				EXT3_FEATURE_INCOMPAT_EXTENTS))
++			printf(_("Extents are not enabled.  The file extent "
++				 "tree can be checksummed, whereas block maps "
++				 "cannot.  Not enabling extents reduces the "
++				 "coverage of metadata checksumming.  "
++				 "Pass -O extents to rectify.\n"));
++		if (!EXT2_HAS_INCOMPAT_FEATURE(fs->super,
++				EXT4_FEATURE_INCOMPAT_64BIT))
++			printf(_("64-bit filesystem support is not "
++				 "enabled.  The larger fields afforded by "
++				 "this feature enable full-strength "
++				 "checksumming.  Pass -O 64bit to rectify.\n"));
++	}
++
+ 	/* Can't undo discard ... */
+ 	if (!noaction && discard && (io_ptr != undo_io_manager)) {
+ 		retval = mke2fs_discard_device(fs);
+-- 
+1.7.9.107.g97f9a
+

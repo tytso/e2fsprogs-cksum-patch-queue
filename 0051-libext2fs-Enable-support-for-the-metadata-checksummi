@@ -1,0 +1,56 @@
+From 7721f2f11fe2ee9c6cc01fb25ccb31756dd0b537 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Tue, 6 Mar 2012 16:03:24 -0800
+Subject: [PATCH 51/54] libext2fs: Enable support for the metadata
+ checksumming feature
+
+Add metadata checksumming to the list of supported features.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ lib/ext2fs/ext2fs.h     |    6 ++++--
+ lib/ext2fs/kernel-jbd.h |    3 ++-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
+index 49d9271..cd6c0b2 100644
+--- a/lib/ext2fs/ext2fs.h
++++ b/lib/ext2fs/ext2fs.h
+@@ -598,7 +598,8 @@ typedef struct ext2_icount *ext2_icount_t;
+ 					 EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE|\
+ 					 EXT4_FEATURE_RO_COMPAT_GDT_CSUM|\
+ 					 EXT4_FEATURE_RO_COMPAT_BIGALLOC|\
+-					 EXT4_FEATURE_RO_COMPAT_QUOTA)
++					 EXT4_FEATURE_RO_COMPAT_QUOTA|\
++					 EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)
+ #else
+ #define EXT2_LIB_FEATURE_RO_COMPAT_SUPP	(EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER|\
+ 					 EXT4_FEATURE_RO_COMPAT_HUGE_FILE|\
+@@ -606,7 +607,8 @@ typedef struct ext2_icount *ext2_icount_t;
+ 					 EXT4_FEATURE_RO_COMPAT_DIR_NLINK|\
+ 					 EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE|\
+ 					 EXT4_FEATURE_RO_COMPAT_GDT_CSUM|\
+-					 EXT4_FEATURE_RO_COMPAT_BIGALLOC)
++					 EXT4_FEATURE_RO_COMPAT_BIGALLOC|\
++					 EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)
+ #endif
+ 
+ /*
+diff --git a/lib/ext2fs/kernel-jbd.h b/lib/ext2fs/kernel-jbd.h
+index e9d725d..a86150c 100644
+--- a/lib/ext2fs/kernel-jbd.h
++++ b/lib/ext2fs/kernel-jbd.h
+@@ -259,7 +259,8 @@ typedef struct journal_superblock_s
+ #define JFS_KNOWN_ROCOMPAT_FEATURES	0
+ #define JFS_KNOWN_INCOMPAT_FEATURES	(JFS_FEATURE_INCOMPAT_REVOKE|\
+ 					 JFS_FEATURE_INCOMPAT_ASYNC_COMMIT|\
+-					 JFS_FEATURE_INCOMPAT_64BIT)
++					 JFS_FEATURE_INCOMPAT_64BIT|\
++					 JFS_FEATURE_INCOMPAT_CSUM_V2)
+ 
+ #if (defined(E2FSCK_INCLUDE_INLINE_FUNCS) || !defined(NO_INLINE_FUNCS))
+ #ifdef E2FSCK_INCLUDE_INLINE_FUNCS
+-- 
+1.7.9.107.g97f9a
+

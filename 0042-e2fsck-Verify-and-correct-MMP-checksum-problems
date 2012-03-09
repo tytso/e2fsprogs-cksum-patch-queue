@@ -1,0 +1,64 @@
+From 10f7a495219213c138498f3523e9119297277260 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Tue, 6 Mar 2012 16:02:22 -0800
+Subject: [PATCH 42/54] e2fsck: Verify and correct MMP checksum problems
+
+Check and handle MMP checksum problems by resetting the block.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/problem.c |    5 +++++
+ e2fsck/problem.h |    3 +++
+ e2fsck/unix.c    |    5 +++++
+ 3 files changed, 13 insertions(+), 0 deletions(-)
+
+diff --git a/e2fsck/problem.c b/e2fsck/problem.c
+index 8c55721..91617bc 100644
+--- a/e2fsck/problem.c
++++ b/e2fsck/problem.c
+@@ -432,6 +432,11 @@ static struct e2fsck_problem problem_table[] = {
+ 	     "bits cannot be set simultaneously."),
+ 	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
+ 
++	/* Superblock has invalid MMP checksum. */
++	{ PR_0_MMP_CSUM_INVALID,
++	  N_("@S MMP block checksum does not match MMP block.  "),
++	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
++
+ 	/* Pass 1 errors */
+ 
+ 	/* Pass 1: Checking inodes, blocks, and sizes */
+diff --git a/e2fsck/problem.h b/e2fsck/problem.h
+index e47984c..f6f1eee 100644
+--- a/e2fsck/problem.h
++++ b/e2fsck/problem.h
+@@ -248,6 +248,9 @@ struct problem_context {
+  */
+ #define PR_0_META_AND_GDT_CSUM_SET		0x000044
+ 
++/* Superblock has invalid MMP checksum. */
++#define PR_0_MMP_CSUM_INVALID			0x000045
++
+ /*
+  * Pass 1 errors
+  */
+diff --git a/e2fsck/unix.c b/e2fsck/unix.c
+index 678ce9b..d3fb8f8 100644
+--- a/e2fsck/unix.c
++++ b/e2fsck/unix.c
+@@ -1098,6 +1098,11 @@ check_error:
+ 			ext2fs_mmp_clear(fs);
+ 			retval = 0;
+ 		}
++	} else if (retval == EXT2_ET_MMP_CSUM_INVALID) {
++		if (fix_problem(ctx, PR_0_MMP_CSUM_INVALID, &pctx)) {
++			ext2fs_mmp_clear(fs);
++			retval = 0;
++		}
+ 	}
+ 	return retval;
+ }
+-- 
+1.7.9.107.g97f9a
+

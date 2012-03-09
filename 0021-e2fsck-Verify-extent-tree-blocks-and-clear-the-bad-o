@@ -1,0 +1,140 @@
+From dc4fc3c387ad257fa7f701efe8a3402930a749cc Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:50 -0500
+Subject: [PATCH 21/54] e2fsck: Verify extent tree blocks and clear the bad
+ ones
+
+When we encounter an extent tree block that passes the header check but fails
+the checksum, offer to clear just that extent block instead of failing the
+whole tree, which results in the entire inode being wiped out.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/pass1.c   |   34 ++++++++++++++++++++++++++++++++--
+ e2fsck/problem.c |   15 +++++++++++++++
+ e2fsck/problem.h |    6 ++++++
+ 3 files changed, 53 insertions(+), 2 deletions(-)
+
+diff --git a/e2fsck/pass1.c b/e2fsck/pass1.c
+index 471e3e0..332cc22 100644
+--- a/e2fsck/pass1.c
++++ b/e2fsck/pass1.c
+@@ -1819,6 +1819,7 @@ static void scan_extent_node(e2fsck_t ctx, struct problem_context *pctx,
+ 	int			is_dir, is_leaf;
+ 	errcode_t		problem;
+ 	struct ext2_extent_info	info;
++	int			failed_csum;
+ 
+ 	pctx->errcode = ext2fs_extent_get_info(ehandle, &info);
+ 	if (pctx->errcode)
+@@ -1826,11 +1827,25 @@ static void scan_extent_node(e2fsck_t ctx, struct problem_context *pctx,
+ 
+ 	pctx->errcode = ext2fs_extent_get(ehandle, EXT2_EXTENT_FIRST_SIB,
+ 					  &extent);
+-	while (!pctx->errcode && info.num_entries-- > 0) {
++	while ((pctx->errcode == 0 ||
++		pctx->errcode == EXT2_ET_EXTENT_CSUM_INVALID) &&
++	       info.num_entries-- > 0) {
++		failed_csum = 0;
+ 		is_leaf = extent.e_flags & EXT2_EXTENT_FLAGS_LEAF;
+ 		is_dir = LINUX_S_ISDIR(pctx->inode->i_mode);
+ 
+ 		problem = 0;
++		/* Ask to clear a corrupt extent block */
++		if (pctx->errcode == EXT2_ET_EXTENT_CSUM_INVALID) {
++			pctx->blk = extent.e_pblk;
++			pctx->blk2 = extent.e_lblk;
++			pctx->num = extent.e_len;
++			problem = PR_1_EXTENT_CSUM_INVALID;
++			if (fix_problem(ctx, problem, pctx))
++				goto fix_problem_now;
++			failed_csum = 1;
++		}
++
+ 		if (extent.e_pblk == 0 ||
+ 		    extent.e_pblk < ctx->fs->super->s_first_data_block ||
+ 		    extent.e_pblk >= ext2fs_blocks_count(ctx->fs->super))
+@@ -1842,12 +1857,24 @@ static void scan_extent_node(e2fsck_t ctx, struct problem_context *pctx,
+ 			 ext2fs_blocks_count(ctx->fs->super))
+ 			problem = PR_1_EXTENT_ENDS_BEYOND;
+ 
++		/* Corrupt but passes checks?  Ask to fix checksum. */
++		if (failed_csum) {
++			pctx->blk = extent.e_pblk;
++			pctx->blk2 = extent.e_lblk;
++			pctx->num = extent.e_len;
++			problem = 0;
++			if (fix_problem(ctx, PR_1_EXTENT_ONLY_CSUM_INVALID,
++					pctx))
++				ext2fs_extent_replace(ehandle, 0, &extent);
++		}
++
+ 		if (problem) {
+ 		report_problem:
+ 			pctx->blk = extent.e_pblk;
+ 			pctx->blk2 = extent.e_lblk;
+ 			pctx->num = extent.e_len;
+ 			if (fix_problem(ctx, problem, pctx)) {
++fix_problem_now:
+ 				e2fsck_read_bitmaps(ctx);
+ 				pctx->errcode =
+ 					ext2fs_extent_delete(ehandle, 0);
+@@ -1874,7 +1901,10 @@ static void scan_extent_node(e2fsck_t ctx, struct problem_context *pctx,
+ 			if (pctx->errcode) {
+ 				pctx->str = "EXT2_EXTENT_DOWN";
+ 				problem = PR_1_EXTENT_HEADER_INVALID;
+-				if (pctx->errcode == EXT2_ET_EXTENT_HEADER_BAD)
++				if (pctx->errcode ==
++					EXT2_ET_EXTENT_HEADER_BAD ||
++				    pctx->errcode ==
++					EXT2_ET_EXTENT_CSUM_INVALID)
+ 					goto report_problem;
+ 				return;
+ 			}
+diff --git a/e2fsck/problem.c b/e2fsck/problem.c
+index 7dc4c39..6ceee11 100644
+--- a/e2fsck/problem.c
++++ b/e2fsck/problem.c
+@@ -946,6 +946,21 @@ static struct e2fsck_problem problem_table[] = {
+ 	  N_("The bad @b @i looks @n.  "),
+ 	  PROMPT_CLEAR, 0 },
+ 
++	/* Inode extent block checksum does not match extent */
++	{ PR_1_EXTENT_CSUM_INVALID,
++	  N_("@i %i extent block checksum does not match extent\n\t(logical @b "
++	     "%c, @n physical @b %b, len %N)\n"),
++	  PROMPT_CLEAR, 0 },
++
++	/*
++	 * Inode extent block passes checks, but checksum does not match
++	 * extent
++	 */
++	{ PR_1_EXTENT_ONLY_CSUM_INVALID,
++	  N_("@i %i extent block passes checks, but checksum does not match "
++	     "extent\n\t(logical @b %c, @n physical @b %b, len %N)\n"),
++	  PROMPT_FIX, 0 },
++
+ 	/* Pass 1b errors */
+ 
+ 	/* Pass 1B: Rescan for duplicate/bad blocks */
+diff --git a/e2fsck/problem.h b/e2fsck/problem.h
+index 39e6dba..2adb4b9 100644
+--- a/e2fsck/problem.h
++++ b/e2fsck/problem.h
+@@ -556,6 +556,12 @@ struct problem_context {
+ /* inode passes checks, but checksum does not match inode */
+ #define PR_1_INODE_ONLY_CSUM_INVALID	0x010067
+ 
++/* extent block checksum does not match extent block */
++#define PR_1_EXTENT_CSUM_INVALID	0x010068
++
++/* extent block passes checks, but checksum does not match extent block */
++#define PR_1_EXTENT_ONLY_CSUM_INVALID	0x010069
++
+ /*
+  * Pass 1b errors
+  */
+-- 
+1.7.9.107.g97f9a
+

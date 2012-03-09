@@ -1,0 +1,169 @@
+From 02bb68b8cd4a487a6daad7703ccbc2f430fc0e09 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:52 -0500
+Subject: [PATCH 37/54] e2fsck: Ensure block group checksum uses metadata_csum
+ algorithm
+
+Use the helper function to determine if group descriptors have a checksum.
+Ensure that metadata_csum and uninit_bg flags are not set simultaneously, as
+part of pass 0.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/pass5.c   |   18 ++++++------------
+ e2fsck/problem.c |    9 +++++++++
+ e2fsck/problem.h |    5 +++++
+ e2fsck/super.c   |   16 ++++++++++++++--
+ e2fsck/unix.c    |    2 +-
+ 5 files changed, 35 insertions(+), 15 deletions(-)
+
+diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
+index f1ce6d7..c5dba0b 100644
+--- a/e2fsck/pass5.c
++++ b/e2fsck/pass5.c
+@@ -88,7 +88,7 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
+ 	int		nbytes;
+ 	ext2_ino_t	ino_itr;
+ 	errcode_t	retval;
+-	int		csum_flag = 0;
++	int		csum_flag;
+ 
+ 	/* If bitmap is dirty from being fixed, checksum will be corrected */
+ 	if (ext2fs_test_ib_dirty(ctx->fs))
+@@ -103,9 +103,7 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
+ 		fatal_error(ctx, 0);
+ 	}
+ 
+-	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
+-				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
+-		csum_flag = 1;
++	csum_flag = ext2fs_has_group_desc_csum(ctx->fs);
+ 
+ 	clear_problem_context(&pctx);
+ 	for (i = 0; i < ctx->fs->group_desc_count; i++) {
+@@ -149,7 +147,7 @@ static void check_block_bitmap_checksum(e2fsck_t ctx)
+ 	int		nbytes;
+ 	blk64_t		blk_itr;
+ 	errcode_t	retval;
+-	int		csum_flag = 0;
++	int		csum_flag;
+ 
+ 	/* If bitmap is dirty from being fixed, checksum will be corrected */
+ 	if (ext2fs_test_bb_dirty(ctx->fs))
+@@ -164,9 +162,7 @@ static void check_block_bitmap_checksum(e2fsck_t ctx)
+ 		fatal_error(ctx, 0);
+ 	}
+ 
+-	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
+-				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
+-		csum_flag = 1;
++	csum_flag = ext2fs_has_group_desc_csum(ctx->fs);
+ 
+ 	clear_problem_context(&pctx);
+ 	for (i = 0; i < ctx->fs->group_desc_count; i++) {
+@@ -322,8 +318,7 @@ static void check_block_bitmaps(e2fsck_t ctx)
+ 		goto errout;
+ 	}
+ 
+-	csum_flag = EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
+-					       EXT4_FEATURE_RO_COMPAT_GDT_CSUM);
++	csum_flag = ext2fs_has_group_desc_csum(fs);
+ redo_counts:
+ 	had_problem = 0;
+ 	save_problem = 0;
+@@ -599,8 +594,7 @@ static void check_inode_bitmaps(e2fsck_t ctx)
+ 		goto errout;
+ 	}
+ 
+-	csum_flag = EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
+-					       EXT4_FEATURE_RO_COMPAT_GDT_CSUM);
++	csum_flag = ext2fs_has_group_desc_csum(fs);
+ redo_counts:
+ 	had_problem = 0;
+ 	save_problem = 0;
+diff --git a/e2fsck/problem.c b/e2fsck/problem.c
+index ad6887e..8c55721 100644
+--- a/e2fsck/problem.c
++++ b/e2fsck/problem.c
+@@ -423,6 +423,15 @@ static struct e2fsck_problem problem_table[] = {
+ 	  N_("@S has invalid MMP magic.  "),
+ 	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
+ 
++	/*
++	 * metadata_csum implies uninit_bg; both feature bits cannot
++	 * be set simultaneously.
++	 */
++	{ PR_0_META_AND_GDT_CSUM_SET,
++	  N_("@S metadata_csum supersedes uninit_bg; both feature "
++	     "bits cannot be set simultaneously."),
++	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
++
+ 	/* Pass 1 errors */
+ 
+ 	/* Pass 1: Checking inodes, blocks, and sizes */
+diff --git a/e2fsck/problem.h b/e2fsck/problem.h
+index b8a7548..e47984c 100644
+--- a/e2fsck/problem.h
++++ b/e2fsck/problem.h
+@@ -242,6 +242,11 @@ struct problem_context {
+ /* Superblock has invalid MMP magic. */
+ #define PR_0_MMP_INVALID_MAGIC			0x000043
+ 
++/*
++ * metadata_csum supersedes uninit_bg; both feature bits cannot be set
++ * simultaneously.
++ */
++#define PR_0_META_AND_GDT_CSUM_SET		0x000044
+ 
+ /*
+  * Pass 1 errors
+diff --git a/e2fsck/super.c b/e2fsck/super.c
+index dbd337c..939a71e 100644
+--- a/e2fsck/super.c
++++ b/e2fsck/super.c
+@@ -577,14 +577,26 @@ void check_super_block(e2fsck_t ctx)
+ 		}
+ 	}
+ 
++	/* Are metadata_csum and uninit_bg both set? */
++	if (EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++				       EXT4_FEATURE_RO_COMPAT_METADATA_CSUM) &&
++	    EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM) &&
++	    fix_problem(ctx, PR_0_META_AND_GDT_CSUM_SET, &pctx)) {
++		fs->super->s_feature_ro_compat &=
++			~EXT4_FEATURE_RO_COMPAT_GDT_CSUM;
++		ext2fs_mark_super_dirty(fs);
++		for (i = 0; i < fs->group_desc_count; i++)
++			ext2fs_group_desc_csum_set(fs, i);
++	}
++
+ 	/*
+ 	 * Verify the group descriptors....
+ 	 */
+ 	first_block = sb->s_first_data_block;
+ 	last_block = ext2fs_blocks_count(sb)-1;
+ 
+-	csum_flag = EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
+-					       EXT4_FEATURE_RO_COMPAT_GDT_CSUM);
++	csum_flag = ext2fs_has_group_desc_csum(fs);
+ 	for (i = 0; i < fs->group_desc_count; i++) {
+ 		pctx.group = i;
+ 
+diff --git a/e2fsck/unix.c b/e2fsck/unix.c
+index a8e3775..678ce9b 100644
+--- a/e2fsck/unix.c
++++ b/e2fsck/unix.c
+@@ -1653,7 +1653,7 @@ no_journal:
+ 	}
+ 
+ 	if ((run_result & E2F_FLAG_CANCEL) == 0 &&
+-	    sb->s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM &&
++	    ext2fs_has_group_desc_csum(ctx->fs) &&
+ 	    !(ctx->options & E2F_OPT_READONLY)) {
+ 		retval = ext2fs_set_gdt_csum(ctx->fs);
+ 		if (retval) {
+-- 
+1.7.9.107.g97f9a
+

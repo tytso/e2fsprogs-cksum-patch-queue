@@ -1,0 +1,96 @@
+From ecd4416c46336414e4c3816353c4e930ee8c3da3 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:47 -0500
+Subject: [PATCH 04/54] libext2fs: Precompute FS UUID checksum seed
+
+Precompute the FS UUID checksum seed that is used for all metadata checksumming
+operations and store it in ext2_filsys.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/super.c      |    1 +
+ lib/ext2fs/ext2fs.h |   14 ++++++++++++++
+ lib/ext2fs/openfs.c |    2 ++
+ misc/mke2fs.c       |    1 +
+ 4 files changed, 18 insertions(+), 0 deletions(-)
+
+diff --git a/e2fsck/super.c b/e2fsck/super.c
+index 3397d77..94648c3 100644
+--- a/e2fsck/super.c
++++ b/e2fsck/super.c
+@@ -710,6 +710,7 @@ void check_super_block(e2fsck_t ctx)
+ 	if (!(ctx->options & E2F_OPT_READONLY) && uuid_is_null(sb->s_uuid)) {
+ 		if (fix_problem(ctx, PR_0_ADD_UUID, &pctx)) {
+ 			uuid_generate(sb->s_uuid);
++			ext2fs_init_csum_seed(fs);
+ 			fs->flags |= EXT2_FLAG_DIRTY;
+ 			fs->flags &= ~EXT2_FLAG_MASTER_SB_ONLY;
+ 		}
+diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
+index bde22b6..f7a73e5 100644
+--- a/lib/ext2fs/ext2fs.h
++++ b/lib/ext2fs/ext2fs.h
+@@ -281,6 +281,9 @@ struct struct_ext2_filsys {
+ 	 * Time at which e2fsck last updated the MMP block.
+ 	 */
+ 	long mmp_last_written;
++
++	/* Precomputed FS UUID checksum for seeding other checksums */
++	__u32 csum_seed;
+ };
+ 
+ #if EXT2_FLAT_INCLUDES
+@@ -1438,6 +1441,7 @@ extern errcode_t ext2fs_write_bb_FILE(ext2_badblocks_list bb_list,
+ 
+ 
+ /* inline functions */
++extern void ext2fs_init_csum_seed(ext2_filsys fs);
+ extern errcode_t ext2fs_get_mem(unsigned long size, void *ptr);
+ extern errcode_t ext2fs_get_memalign(unsigned long size,
+ 				     unsigned long align, void *ptr);
+@@ -1490,6 +1494,16 @@ extern int ext2fs_fstat(int fd, ext2fs_struct_stat *buf);
+ 
+ #ifndef EXT2_CUSTOM_MEMORY_ROUTINES
+ #include <string.h>
++_INLINE_ void ext2fs_init_csum_seed(ext2_filsys fs)
++{
++	if (!EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++					EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		return;
++
++	fs->csum_seed = ext2fs_crc32c_le(~0, fs->super->s_uuid,
++					 sizeof(fs->super->s_uuid));
++}
++
+ /*
+  *  Allocate memory
+  */
+diff --git a/lib/ext2fs/openfs.c b/lib/ext2fs/openfs.c
+index 32e068c..10beb06 100644
+--- a/lib/ext2fs/openfs.c
++++ b/lib/ext2fs/openfs.c
+@@ -298,6 +298,8 @@ errcode_t ext2fs_open2(const char *name, const char *io_options,
+ 		retval = EXT2_ET_CORRUPT_SUPERBLOCK;
+ 		goto cleanup;
+ 	}
++	/* Precompute the FS UUID to seed other checksums */
++	ext2fs_init_csum_seed(fs);
+ 
+ 	/*
+ 	 * Read group descriptors
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index 51435d2..b628382 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -2318,6 +2318,7 @@ int main (int argc, char *argv[])
+ 		}
+ 	} else
+ 		uuid_generate(fs->super->s_uuid);
++	ext2fs_init_csum_seed(fs);
+ 
+ 	/*
+ 	 * Initialize the directory index variables
+-- 
+1.7.9.107.g97f9a
+

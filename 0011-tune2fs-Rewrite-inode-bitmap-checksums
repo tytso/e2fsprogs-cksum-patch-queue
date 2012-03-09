@@ -1,0 +1,31 @@
+From 34c2951289af4feaab1681f9a6dc645b55777d1f Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:48 -0500
+Subject: [PATCH 11/54] tune2fs: Rewrite inode bitmap checksums
+
+When toggling metadata_csum, mark the inode bitmap dirty so that they are
+written out with new checksums.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/tune2fs.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/misc/tune2fs.c b/misc/tune2fs.c
+index cb1aff3..478b651 100644
+--- a/misc/tune2fs.c
++++ b/misc/tune2fs.c
+@@ -427,6 +427,9 @@ static void rewrite_metadata_checksums(ext2_filsys fs)
+ 	fs->flags |= EXT2_FLAG_IGNORE_CSUM_ERRORS;
+ 	ext2fs_init_csum_seed(fs);
+ 	rewrite_inodes(fs);
++	ext2fs_read_bitmaps(fs);
++	ext2fs_mark_ib_dirty(fs);
++	fs->flags &= ~EXT2_FLAG_SUPER_ONLY;
+ 	fs->flags &= ~EXT2_FLAG_IGNORE_CSUM_ERRORS;
+ }
+ 
+-- 
+1.7.9.107.g97f9a
+

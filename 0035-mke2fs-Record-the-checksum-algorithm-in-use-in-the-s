@@ -1,0 +1,33 @@
+From bd3b5f48b04a63cc814fd0b3966e4765ff9837cd Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:51 -0500
+Subject: [PATCH 35/54] mke2fs: Record the checksum algorithm in use in the
+ superblock
+
+Record the type of checksum algorithm we're using for metadata in the
+superblock when creating a filesystem.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/mke2fs.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index 50a5297..62577ff 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -2422,6 +2422,10 @@ int main (int argc, char *argv[])
+ 			sizeof(fs->super->s_last_mounted));
+ 	}
+ 
++	if (EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++				       EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		fs->super->s_checksum_type = EXT2_CRC32C_CHKSUM;
++
+ 	if (!quiet || noaction)
+ 		show_stats(fs);
+ 
+-- 
+1.7.9.107.g97f9a
+

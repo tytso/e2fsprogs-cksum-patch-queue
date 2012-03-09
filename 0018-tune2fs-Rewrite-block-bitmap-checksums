@@ -1,0 +1,29 @@
+From afee6a5694a99217e47dfcb377d08ab5a7c0c5df Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:49 -0500
+Subject: [PATCH 18/54] tune2fs: Rewrite block bitmap checksums
+
+When toggling metadata_csum, mark the block bitmap dirty so that it gets
+written with new checksums.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/tune2fs.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/misc/tune2fs.c b/misc/tune2fs.c
+index 478b651..a5ff5ce 100644
+--- a/misc/tune2fs.c
++++ b/misc/tune2fs.c
+@@ -429,6 +429,7 @@ static void rewrite_metadata_checksums(ext2_filsys fs)
+ 	rewrite_inodes(fs);
+ 	ext2fs_read_bitmaps(fs);
+ 	ext2fs_mark_ib_dirty(fs);
++	ext2fs_mark_bb_dirty(fs);
+ 	fs->flags &= ~EXT2_FLAG_SUPER_ONLY;
+ 	fs->flags &= ~EXT2_FLAG_IGNORE_CSUM_ERRORS;
+ }
+-- 
+1.7.9.107.g97f9a
+

@@ -1,0 +1,31 @@
+From 252d4c78c0bafda30874d091f359f3b6cb8ec715 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:48 -0500
+Subject: [PATCH 12/54] dumpe2fs: Display inode bitmap checksum
+
+Display the inode bitmap checksum for each block group.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/dumpe2fs.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/misc/dumpe2fs.c b/misc/dumpe2fs.c
+index 5b114e9..ec4f0e9 100644
+--- a/misc/dumpe2fs.c
++++ b/misc/dumpe2fs.c
+@@ -226,6 +226,10 @@ static void list_desc (ext2_filsys fs)
+ 		print_number(ext2fs_inode_bitmap_loc(fs, i));
+ 		print_bg_rel_offset(fs, ext2fs_inode_bitmap_loc(fs, i), 0,
+ 				    first_block, last_block);
++		if (fs->super->s_feature_ro_compat &
++		    EXT4_FEATURE_RO_COMPAT_METADATA_CSUM)
++			printf(_(", csum 0x%08x"),
++			       ext2fs_inode_bitmap_checksum(fs, i));
+ 		fputs(_("\n  Inode table at "), stdout);
+ 		print_range(ext2fs_inode_table_loc(fs, i),
+ 			    ext2fs_inode_table_loc(fs, i) +
+-- 
+1.7.9.107.g97f9a
+

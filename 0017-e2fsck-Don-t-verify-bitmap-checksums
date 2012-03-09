@@ -1,0 +1,32 @@
+From 62f6dd84f2ae8f5539e0e107e83010cc0e1673a5 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:49 -0500
+Subject: [PATCH 17/54] e2fsck: Don't verify bitmap checksums
+
+Since the correct inode and block bitmaps are calculated in pass 5, don't fail
+the bitmap read operation in prior passes since (a) incorrect results won't
+kill us and (b) if we fail early, we'll never _get_ to pass 5.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/util.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/e2fsck/util.c b/e2fsck/util.c
+index 6e3a1dc..af483fa 100644
+--- a/e2fsck/util.c
++++ b/e2fsck/util.c
+@@ -249,7 +249,9 @@ void e2fsck_read_bitmaps(e2fsck_t ctx)
+ 	old_op = ehandler_operation(_("reading inode and block bitmaps"));
+ 	e2fsck_set_bitmap_type(fs, EXT2FS_BMAP64_RBTREE, "fs_bitmaps",
+ 			       &save_type);
++	ctx->fs->flags |= EXT2_FLAG_IGNORE_CSUM_ERRORS;
+ 	retval = ext2fs_read_bitmaps(fs);
++	ctx->fs->flags &= ~EXT2_FLAG_IGNORE_CSUM_ERRORS;
+ 	fs->default_bitmap_type = save_type;
+ 	ehandler_operation(old_op);
+ 	if (retval) {
+-- 
+1.7.9.107.g97f9a
+

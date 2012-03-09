@@ -1,0 +1,52 @@
+From d1ed73461862e549891a336e24e27a967ee63857 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:50 -0500
+Subject: [PATCH 22/54] debugfs: Print htree internal node checksums
+
+Print htree node checksums when dumping a directory index.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ debugfs/htree.c |   17 ++++++++++++++++-
+ 1 files changed, 16 insertions(+), 1 deletions(-)
+
+diff --git a/debugfs/htree.c b/debugfs/htree.c
+index 05745eb..2fb804e 100644
+--- a/debugfs/htree.c
++++ b/debugfs/htree.c
+@@ -120,8 +120,9 @@ static void htree_dump_int_node(ext2_filsys fs, ext2_ino_t ino,
+ {
+ 	struct ext2_dx_countlimit	limit;
+ 	struct ext2_dx_entry		e;
++	struct ext2_dx_tail		*tail;
+ 	int				hash, i;
+-
++	int				remainder;
+ 
+ 	limit = *((struct ext2_dx_countlimit *) ent);
+ 	limit.count = ext2fs_le16_to_cpu(limit.count);
+@@ -130,6 +131,20 @@ static void htree_dump_int_node(ext2_filsys fs, ext2_ino_t ino,
+ 	fprintf(pager, "Number of entries (count): %d\n", limit.count);
+ 	fprintf(pager, "Number of entries (limit): %d\n", limit.limit);
+ 
++	remainder = fs->blocksize - (limit.limit *
++				     sizeof(struct ext2_dx_entry));
++	if (ent == (struct ext2_dx_entry *)(rootnode + 1))
++		remainder -= sizeof(struct ext2_dx_root_info) + 24;
++	else
++		remainder -= 8;
++	if (EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++				       EXT4_FEATURE_RO_COMPAT_METADATA_CSUM) &&
++	    remainder == sizeof(struct ext2_dx_tail)) {
++		tail = (struct ext2_dx_tail *)(ent + limit.limit);
++		fprintf(pager, "Checksum: 0x%08x\n",
++			ext2fs_le32_to_cpu(tail->dt_checksum));
++	}
++
+ 	for (i=0; i < limit.count; i++) {
+ 		hash = i ? ext2fs_le32_to_cpu(ent[i].hash) : 0;
+ 		fprintf(pager, "Entry #%d: Hash 0x%08x%s, block %u\n", i,
+-- 
+1.7.9.107.g97f9a
+

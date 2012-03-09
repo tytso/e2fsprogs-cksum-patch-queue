@@ -1,0 +1,105 @@
+From e64839810408b6ef0e9751868814f0e49d8b7cb3 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:51 -0500
+Subject: [PATCH 29/54] e2fsck: Check extended attribute block checksums
+
+Verify the checksums of separate extended attribute blocks and offer to clear
+it if there is a mismatch.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/pass1.c   |   18 ++++++++++++++++++
+ e2fsck/problem.c |   15 +++++++++++++++
+ e2fsck/problem.h |    6 ++++++
+ 3 files changed, 39 insertions(+), 0 deletions(-)
+
+diff --git a/e2fsck/pass1.c b/e2fsck/pass1.c
+index ce03e46..debc365 100644
+--- a/e2fsck/pass1.c
++++ b/e2fsck/pass1.c
+@@ -1553,6 +1553,7 @@ static int check_ext_attr(e2fsck_t ctx, struct problem_context *pctx,
+ 	struct ext2_ext_attr_entry *entry;
+ 	int		count;
+ 	region_t	region = 0;
++	int		failed_csum = 0;
+ 
+ 	blk = ext2fs_file_acl_block(fs, inode);
+ 	if (blk == 0)
+@@ -1627,6 +1628,11 @@ static int check_ext_attr(e2fsck_t ctx, struct problem_context *pctx,
+ 	 */
+ 	pctx->blk = blk;
+ 	pctx->errcode = ext2fs_read_ext_attr3(fs, blk, block_buf, pctx->ino);
++	if (pctx->errcode == EXT2_ET_EXT_ATTR_CSUM_INVALID) {
++		if (fix_problem(ctx, PR_1_EA_BLOCK_CSUM_INVALID, pctx))
++			goto clear_extattr;
++		failed_csum = 1;
++	}
+ 	if (pctx->errcode && fix_problem(ctx, PR_1_READ_EA_BLOCK, pctx))
+ 		goto clear_extattr;
+ 	header = (struct ext2_ext_attr_header *) block_buf;
+@@ -1708,6 +1714,18 @@ static int check_ext_attr(e2fsck_t ctx, struct problem_context *pctx,
+ 	}
+ 	region_free(region);
+ 
++	/*
++	 * We only get here if there was no other errors that were fixed.
++	 * If there was a checksum fail, ask to correct it.
++	 */
++	if (failed_csum &&
++	    fix_problem(ctx, PR_1_EA_BLOCK_ONLY_CSUM_INVALID, pctx)) {
++		pctx->errcode = ext2fs_write_ext_attr3(fs, blk, block_buf,
++						       pctx->ino);
++		if (pctx->errcode)
++			return 0;
++	}
++
+ 	count = header->h_refcount - 1;
+ 	if (count)
+ 		ea_refcount_store(ctx->refcount, blk, count);
+diff --git a/e2fsck/problem.c b/e2fsck/problem.c
+index d910629..ad6887e 100644
+--- a/e2fsck/problem.c
++++ b/e2fsck/problem.c
+@@ -961,6 +961,21 @@ static struct e2fsck_problem problem_table[] = {
+ 	     "extent\n\t(logical @b %c, @n physical @b %b, len %N)\n"),
+ 	  PROMPT_FIX, 0 },
+ 
++	/* Extended attribute block checksum for inode does not match. */
++	{ PR_1_EA_BLOCK_CSUM_INVALID,
++	  N_("Extended attribute @a @b %b checksum for @i %i does not "
++	     "match.  "),
++	  PROMPT_CLEAR, 0 },
++
++	/*
++	 * Extended attribute block passes checks, but checksum for inode does
++	 * not match.
++	 */
++	{ PR_1_EA_BLOCK_CSUM_INVALID,
++	  N_("Extended attribute @a @b %b passes checks, but checksum for "
++	     "@i %i does not match.  "),
++	  PROMPT_FIX, 0 },
++
+ 	/* Pass 1b errors */
+ 
+ 	/* Pass 1B: Rescan for duplicate/bad blocks */
+diff --git a/e2fsck/problem.h b/e2fsck/problem.h
+index eb70d61..b8a7548 100644
+--- a/e2fsck/problem.h
++++ b/e2fsck/problem.h
+@@ -562,6 +562,12 @@ struct problem_context {
+ /* extent block passes checks, but checksum does not match extent block */
+ #define PR_1_EXTENT_ONLY_CSUM_INVALID	0x010069
+ 
++/* ea block checksum invalid */
++#define PR_1_EA_BLOCK_CSUM_INVALID	0x01006A
++
++/* ea block passes checks, but checksum invalid */
++#define PR_1_EA_BLOCK_ONLY_CSUM_INVALID	0x01006B
++
+ /*
+  * Pass 1b errors
+  */
+-- 
+1.7.9.107.g97f9a
+

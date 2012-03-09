@@ -1,0 +1,70 @@
+From cc1db3649c5c81df2f3af5bfc6f9c019fe2e1491 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:47 -0500
+Subject: [PATCH 03/54] debugfs: Optionally ignore bad checksums
+
+If someone is debugging a badly damaged filesystem, it might be useful to
+disable the checksum verifications that will otherwise prevent the filesystem
+from loading.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ debugfs/debugfs.8.in |    7 ++++++-
+ debugfs/debugfs.c    |    7 +++++--
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/debugfs/debugfs.8.in b/debugfs/debugfs.8.in
+index 08d9068..157c667 100644
+--- a/debugfs/debugfs.8.in
++++ b/debugfs/debugfs.8.in
+@@ -8,7 +8,7 @@ debugfs \- ext2/ext3/ext4 file system debugger
+ .SH SYNOPSIS
+ .B debugfs
+ [
+-.B \-DVwci
++.B \-DVwcin
+ ]
+ [
+ .B \-b
+@@ -48,6 +48,11 @@ file system (e.g /dev/hdXX).
+ Specifies that the file system should be opened in read-write mode.
+ Without this option, the file system is opened in read-only mode.
+ .TP
++.I \-n
++Disables metadata checksum verification.  This should only be used if
++you believe the metadata to be correct despite the complaints of
++e2fsprogs.
++.TP
+ .I \-c
+ Specifies that the file system should be opened in catastrophic mode, in
+ which the inode and group bitmaps are not read initially.  This can be
+diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
+index 04d5139..4ff23ef 100644
+--- a/debugfs/debugfs.c
++++ b/debugfs/debugfs.c
+@@ -2271,9 +2271,9 @@ int main(int argc, char **argv)
+ 	int		catastrophic = 0;
+ 	char		*data_filename = 0;
+ #ifdef READ_ONLY
+-	const char	*opt_string = "icR:f:b:s:Vd:D";
++	const char	*opt_string = "nicR:f:b:s:Vd:D";
+ #else
+-	const char	*opt_string = "iwcR:f:b:s:Vd:D";
++	const char	*opt_string = "niwcR:f:b:s:Vd:D";
+ #endif
+ 
+ 	if (debug_prog_name == 0)
+@@ -2300,6 +2300,9 @@ int main(int argc, char **argv)
+ 		case 'i':
+ 			open_flags |= EXT2_FLAG_IMAGE_FILE;
+ 			break;
++		case 'n':
++			open_flags |= EXT2_FLAG_IGNORE_CSUM_ERRORS;
++			break;
+ #ifndef READ_ONLY
+ 		case 'w':
+ 			open_flags |= EXT2_FLAG_RW;
+-- 
+1.7.9.107.g97f9a
+

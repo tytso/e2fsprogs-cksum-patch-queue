@@ -1,0 +1,84 @@
+From e0e6f106e63af78ed136091ef57f885a3392d28b Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:49 -0500
+Subject: [PATCH 20/54] tune2fs: Enable extent tree checksums
+
+Add to tune2fs the ability to recalculate extent tree checksums when altering
+the metadata checksum feature flag.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/tune2fs.c |   49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 49 insertions(+), 0 deletions(-)
+
+diff --git a/misc/tune2fs.c b/misc/tune2fs.c
+index a5ff5ce..784df9a 100644
+--- a/misc/tune2fs.c
++++ b/misc/tune2fs.c
+@@ -376,6 +376,48 @@ static void request_fsck_afterwards(ext2_filsys fs)
+ 		printf(_("(and reboot afterwards!)\n"));
+ }
+ 
++/* Rewrite extents */
++static errcode_t rewrite_extents(ext2_filsys fs, ext2_ino_t ino,
++				 struct ext2_inode *inode)
++{
++	ext2_extent_handle_t	handle;
++	struct ext2fs_extent	extent;
++	int			op = EXT2_EXTENT_ROOT;
++	errcode_t		errcode;
++
++	if (!(inode->i_flags & EXT4_EXTENTS_FL))
++		return 0;
++
++	errcode = ext2fs_extent_open(fs, ino, &handle);
++	if (errcode)
++		return errcode;
++
++	while (1) {
++		errcode = ext2fs_extent_get(handle, op, &extent);
++		if (errcode)
++			break;
++
++		/* Root node is in the separately checksummed inode */
++		if (op == EXT2_EXTENT_ROOT) {
++			op = EXT2_EXTENT_NEXT;
++			continue;
++		}
++		op = EXT2_EXTENT_NEXT;
++
++		/* Only visit the first extent in each extent block */
++		if (extent.e_flags & EXT2_EXTENT_FLAGS_SECOND_VISIT)
++			continue;
++		errcode = ext2fs_extent_replace(handle, 0, &extent);
++		if (errcode)
++			break;
++	}
++
++	/* Ok if we run off the end */
++	if (errcode == EXT2_ET_EXTENT_NO_NEXT)
++		errcode = 0;
++	return errcode;
++}
++
+ /*
+  * Forcibly set checksums in all inodes.
+  */
+@@ -416,6 +458,13 @@ static void rewrite_inodes(ext2_filsys fs)
+ 			com_err("set_csum", retval, "while writing inode");
+ 			exit(1);
+ 		}
++
++		retval = rewrite_extents(fs, ino, inode);
++		if (retval) {
++			com_err("rewrite_extents", retval,
++				"while rewriting extents");
++			exit(1);
++		}
+ 	} while (ino);
+ 
+ 	ext2fs_free_mem(&inode);
+-- 
+1.7.9.107.g97f9a
+

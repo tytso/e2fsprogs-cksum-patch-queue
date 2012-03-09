@@ -1,0 +1,66 @@
+From d616c4d8aeb0ebba992ba8f2765637024481f9d1 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Tue, 6 Mar 2012 16:02:01 -0800
+Subject: [PATCH 39/54] mke2fs: Write new group descriptors with the
+ appropriate checksum
+
+Update mke2fs to use the helper function to determine if group descriptors
+should have checksums calculated.  Since metadata_csum supersedes uninit_bg,
+quietly drop uninit_bg if metadata_csum is set, so that older kernels don't
+get confused.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ misc/mke2fs.c |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index 62577ff..1716255 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -1936,6 +1936,13 @@ profile_error:
+ 	if (extended_opts)
+ 		parse_extended_opts(&fs_param, extended_opts);
+ 
++	/* Don't allow user to set both metadata_csum and uninit_bg bits. */
++	if ((fs_param.s_feature_ro_compat &
++	     EXT4_FEATURE_RO_COMPAT_METADATA_CSUM) &&
++	    (fs_param.s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
++		fs_param.s_feature_ro_compat &=
++				~EXT4_FEATURE_RO_COMPAT_GDT_CSUM;
++
+ 	/* Since sparse_super is the default, we would only have a problem
+ 	 * here if it was explicitly disabled.
+ 	 */
+@@ -2048,7 +2055,8 @@ static int should_do_undo(const char *name)
+ 	int csum_flag, force_undo;
+ 
+ 	csum_flag = EXT2_HAS_RO_COMPAT_FEATURE(&fs_param,
+-					       EXT4_FEATURE_RO_COMPAT_GDT_CSUM);
++				EXT4_FEATURE_RO_COMPAT_GDT_CSUM |
++				EXT4_FEATURE_RO_COMPAT_METADATA_CSUM);
+ 	force_undo = get_int_from_profile(fs_types, "force_undo", 0);
+ 	if (!force_undo && (!csum_flag || !lazy_itable_init))
+ 		return 0;
+@@ -2325,6 +2333,7 @@ int main (int argc, char *argv[])
+ 	    (fs_param.s_feature_ro_compat &
+ 	     (EXT4_FEATURE_RO_COMPAT_HUGE_FILE|EXT4_FEATURE_RO_COMPAT_GDT_CSUM|
+ 	      EXT4_FEATURE_RO_COMPAT_DIR_NLINK|
++	      EXT4_FEATURE_RO_COMPAT_METADATA_CSUM|
+ 	      EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE)))
+ 		fs->super->s_kbytes_written = 1;
+ 
+@@ -2472,8 +2481,7 @@ int main (int argc, char *argv[])
+ 		 * inodes as unused; we want e2fsck to consider all
+ 		 * inodes as potentially containing recoverable data.
+ 		 */
+-		if (fs->super->s_feature_ro_compat &
+-		    EXT4_FEATURE_RO_COMPAT_GDT_CSUM) {
++		if (ext2fs_has_group_desc_csum(fs)) {
+ 			for (i = 0; i < fs->group_desc_count; i++)
+ 				ext2fs_bg_itable_unused_set(fs, i, 0);
+ 		}
+-- 
+1.7.9.107.g97f9a
+

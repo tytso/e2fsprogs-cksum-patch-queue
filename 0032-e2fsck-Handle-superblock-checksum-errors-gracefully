@@ -1,0 +1,28 @@
+From 8dbca9430388b5682e3702215d2c8718daded1ca Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:51 -0500
+Subject: [PATCH 32/54] e2fsck: Handle superblock checksum errors gracefully
+
+If e2fsck finds a superblock with an invalid checksum, try the backups.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ e2fsck/unix.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/e2fsck/unix.c b/e2fsck/unix.c
+index 6f97b0f..a8e3775 100644
+--- a/e2fsck/unix.c
++++ b/e2fsck/unix.c
+@@ -1198,6 +1198,7 @@ restart:
+ 	if (!ctx->superblock && !(ctx->options & E2F_OPT_PREEN) &&
+ 	    !(ctx->flags & E2F_FLAG_SB_SPECIFIED) &&
+ 	    ((retval == EXT2_ET_BAD_MAGIC) ||
++	     (retval == EXT2_ET_SB_CSUM_INVALID) ||
+ 	     (retval == EXT2_ET_CORRUPT_SUPERBLOCK) ||
+ 	     ((retval == 0) && (retval2 = ext2fs_check_desc(fs))))) {
+ 		if (retval2 == ENOMEM) {
+-- 
+1.7.9.107.g97f9a
+

@@ -1,0 +1,239 @@
+From 72426c12ace1671261e174314090f8a72ea620bb Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@us.ibm.com>
+Date: Fri, 9 Mar 2012 16:21:48 -0500
+Subject: [PATCH 10/54] libext2fs: Create the inode bitmap checksum
+
+Provide a field in the block group descriptor to store inode bitmap checksum,
+and some helper functions to calculate and verify it.
+
+Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ lib/ext2fs/blknum.c       |   15 +++++++++++++++
+ lib/ext2fs/closefs.c      |   29 +++++++++++++++++------------
+ lib/ext2fs/csum.c         |   40 ++++++++++++++++++++++++++++++++++++++++
+ lib/ext2fs/ext2_err.et.in |    3 +++
+ lib/ext2fs/ext2_fs.h      |    4 ++++
+ lib/ext2fs/ext2fs.h       |    6 ++++++
+ lib/ext2fs/rw_bitmaps.c   |   16 ++++++++++++++++
+ 7 files changed, 101 insertions(+), 12 deletions(-)
+
+diff --git a/lib/ext2fs/blknum.c b/lib/ext2fs/blknum.c
+index 33da7d6..212ad48 100644
+--- a/lib/ext2fs/blknum.c
++++ b/lib/ext2fs/blknum.c
+@@ -230,6 +230,21 @@ void ext2fs_block_bitmap_loc_set(ext2_filsys fs, dgrp_t group, blk64_t blk)
+ }
+ 
+ /*
++ * Return the inode bitmap checksum of a group
++ */
++__u32 ext2fs_inode_bitmap_checksum(ext2_filsys fs, dgrp_t group)
++{
++	struct ext4_group_desc *gdp;
++	__u32 csum;
++
++	gdp = ext4fs_group_desc(fs, fs->group_desc, group);
++	csum = gdp->bg_inode_bitmap_csum_lo;
++	if (fs->super->s_desc_size < EXT4_BG_INODE_BITMAP_CSUM_HI_END)
++		csum |= ((__u32)gdp->bg_inode_bitmap_csum_hi << 16);
++	return csum;
++}
++
++/*
+  * Return the inode bitmap block of a group
+  */
+ blk64_t ext2fs_inode_bitmap_loc(ext2_filsys fs, dgrp_t group)
+diff --git a/lib/ext2fs/closefs.c b/lib/ext2fs/closefs.c
+index 973c2a2..1867be3 100644
+--- a/lib/ext2fs/closefs.c
++++ b/lib/ext2fs/closefs.c
+@@ -288,6 +288,23 @@ errcode_t ext2fs_flush2(ext2_filsys fs, int flags)
+ 
+ 	fs->super->s_wtime = fs->now ? fs->now : time(NULL);
+ 	fs->super->s_block_group_nr = 0;
++
++	/*
++	 * If the write_bitmaps() function is present, call it to
++	 * flush the bitmaps.  This is done this way so that a simple
++	 * program that doesn't mess with the bitmaps doesn't need to
++	 * drag in the bitmaps.c code.
++	 *
++	 * Bitmap checksums live in the group descriptor, so the
++	 * bitmaps need to be written before the descriptors.
++	 */
++	if (fs->write_bitmaps) {
++		retval = fs->write_bitmaps(fs);
++		if (retval)
++			goto errout;
++	}
++
++	/* Prepare the group descriptors for writing */
+ #ifdef WORDS_BIGENDIAN
+ 	retval = EXT2_ET_NO_MEMORY;
+ 	retval = ext2fs_get_mem(SUPERBLOCK_SIZE, &super_shadow);
+@@ -378,18 +395,6 @@ errcode_t ext2fs_flush2(ext2_filsys fs, int flags)
+ 
+ 	ext2fs_numeric_progress_close(fs, &progress, NULL);
+ 
+-	/*
+-	 * If the write_bitmaps() function is present, call it to
+-	 * flush the bitmaps.  This is done this way so that a simple
+-	 * program that doesn't mess with the bitmaps doesn't need to
+-	 * drag in the bitmaps.c code.
+-	 */
+-	if (fs->write_bitmaps) {
+-		retval = fs->write_bitmaps(fs);
+-		if (retval)
+-			goto errout;
+-	}
+-
+ write_primary_superblock_only:
+ 	/*
+ 	 * Write out master superblock.  This has to be done
+diff --git a/lib/ext2fs/csum.c b/lib/ext2fs/csum.c
+index 5091a00..90ccd18 100644
+--- a/lib/ext2fs/csum.c
++++ b/lib/ext2fs/csum.c
+@@ -30,6 +30,46 @@
+ #define STATIC static
+ #endif
+ 
++int ext2fs_inode_bitmap_csum_verify(ext2_filsys fs, dgrp_t group,
++				    char *bitmap, int size)
++{
++	struct ext4_group_desc *gdp = (struct ext4_group_desc *)
++			ext2fs_group_desc(fs, fs->group_desc, group);
++	__u32 provided, calculated;
++
++	if (!EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++					EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		return 1;
++	provided = gdp->bg_inode_bitmap_csum_lo;
++	calculated = ext2fs_crc32c_le(fs->csum_seed, (unsigned char *)bitmap,
++				      size);
++	if (fs->super->s_desc_size >= EXT4_BG_INODE_BITMAP_CSUM_HI_END)
++		provided |= (__u32)gdp->bg_inode_bitmap_csum_hi << 16;
++	else
++		calculated &= 0xFFFF;
++
++	return provided == calculated;
++}
++
++errcode_t ext2fs_inode_bitmap_csum_set(ext2_filsys fs, dgrp_t group,
++				       char *bitmap, int size)
++{
++	__u32 crc;
++	struct ext4_group_desc *gdp = (struct ext4_group_desc *)
++			ext2fs_group_desc(fs, fs->group_desc, group);
++
++	if (!EXT2_HAS_RO_COMPAT_FEATURE(fs->super,
++					EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		return 0;
++
++	crc = ext2fs_crc32c_le(fs->csum_seed, (unsigned char *)bitmap, size);
++	gdp->bg_inode_bitmap_csum_lo = crc & 0xFFFF;
++	if (fs->super->s_desc_size >= EXT4_BG_INODE_BITMAP_CSUM_HI_END)
++		gdp->bg_inode_bitmap_csum_hi = crc >> 16;
++
++	return 0;
++}
++
+ static errcode_t ext2fs_inode_csum(ext2_filsys fs, ext2_ino_t inum,
+ 			       struct ext2_inode_large *inode,
+ 			       __u32 *crc, int has_hi)
+diff --git a/lib/ext2fs/ext2_err.et.in b/lib/ext2fs/ext2_err.et.in
+index d4a5b10..3f5d08f 100644
+--- a/lib/ext2fs/ext2_err.et.in
++++ b/lib/ext2fs/ext2_err.et.in
+@@ -446,4 +446,7 @@ ec	EXT2_ET_MMP_OPEN_DIRECT,
+ ec	EXT2_ET_INODE_CSUM_INVALID,
+ 	"Inode checksum does not match inode"
+ 
++ec	EXT2_ET_INODE_BITMAP_CSUM_INVALID,
++	"Inode bitmap checksum does not match bitmap"
++
+ 	end
+diff --git a/lib/ext2fs/ext2_fs.h b/lib/ext2fs/ext2_fs.h
+index 3ec48a2..7853966 100644
+--- a/lib/ext2fs/ext2_fs.h
++++ b/lib/ext2fs/ext2_fs.h
+@@ -192,6 +192,10 @@ struct ext4_group_desc
+ 	__u32	bg_reserved;
+ };
+ 
++#define EXT4_BG_INODE_BITMAP_CSUM_HI_END	\
++	(offsetof(struct ext4_group_desc, bg_inode_bitmap_csum_hi) + \
++	 sizeof(__u16))
++
+ #define EXT2_BG_INODE_UNINIT	0x0001 /* Inode table/bitmap not initialized */
+ #define EXT2_BG_BLOCK_UNINIT	0x0002 /* Block bitmap not initialized */
+ #define EXT2_BG_INODE_ZEROED	0x0004 /* On-disk itable initialized to zero */
+diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
+index 1728599..58538fe 100644
+--- a/lib/ext2fs/ext2fs.h
++++ b/lib/ext2fs/ext2fs.h
+@@ -809,6 +809,7 @@ extern errcode_t ext2fs_get_block_bitmap_range2(ext2fs_block_bitmap bmap,
+ 					 void *out);
+ 
+ /* blknum.c */
++extern __u32 ext2fs_inode_bitmap_checksum(ext2_filsys fs, dgrp_t group);
+ extern dgrp_t ext2fs_group_of_blk2(ext2_filsys fs, blk64_t);
+ extern blk64_t ext2fs_group_first_block2(ext2_filsys fs, dgrp_t group);
+ extern blk64_t ext2fs_group_last_block2(ext2_filsys fs, dgrp_t group);
+@@ -839,6 +840,7 @@ extern struct ext2_group_desc *ext2fs_group_desc(ext2_filsys fs,
+ extern blk64_t ext2fs_block_bitmap_loc(ext2_filsys fs, dgrp_t group);
+ extern void ext2fs_block_bitmap_loc_set(ext2_filsys fs, dgrp_t group,
+ 					blk64_t blk);
++extern __u32 ext2fs_inode_bitmap_csum(ext2_filsys fs, dgrp_t group);
+ extern blk64_t ext2fs_inode_bitmap_loc(ext2_filsys fs, dgrp_t group);
+ extern void ext2fs_inode_bitmap_loc_set(ext2_filsys fs, dgrp_t group,
+ 					blk64_t blk);
+@@ -948,6 +950,10 @@ extern __u32 ext2fs_crc32c_be(__u32 crc, unsigned char const *p, size_t len);
+ extern __u32 ext2fs_crc32c_le(__u32 crc, unsigned char const *p, size_t len);
+ 
+ /* csum.c */
++extern errcode_t ext2fs_inode_bitmap_csum_set(ext2_filsys fs, dgrp_t group,
++					      char *bitmap, int size);
++extern int ext2fs_inode_bitmap_csum_verify(ext2_filsys fs, dgrp_t group,
++					   char *bitmap, int size);
+ extern errcode_t ext2fs_inode_csum_set(ext2_filsys fs, ext2_ino_t inum,
+ 				       struct ext2_inode_large *inode);
+ extern int ext2fs_inode_csum_verify(ext2_filsys fs, ext2_ino_t inum,
+diff --git a/lib/ext2fs/rw_bitmaps.c b/lib/ext2fs/rw_bitmaps.c
+index 1d5f7b2..0ad5eb1 100644
+--- a/lib/ext2fs/rw_bitmaps.c
++++ b/lib/ext2fs/rw_bitmaps.c
+@@ -117,6 +117,12 @@ static errcode_t write_bitmaps(ext2_filsys fs, int do_inode, int do_block)
+ 		if (retval)
+ 			goto errout;
+ 
++		retval = ext2fs_inode_bitmap_csum_set(fs, i, inode_buf,
++						      inode_nbytes);
++		if (retval)
++			goto errout;
++		ext2fs_group_desc_csum_set(fs, i);
++
+ 		blk = ext2fs_inode_bitmap_loc(fs, i);
+ 		if (blk) {
+ 			retval = io_channel_write_blk64(fs->io, blk, 1,
+@@ -288,6 +294,16 @@ static errcode_t read_bitmaps(ext2_filsys fs, int do_inode, int do_block)
+ 					retval = EXT2_ET_INODE_BITMAP_READ;
+ 					goto cleanup;
+ 				}
++
++				/* verify inode bitmap checksum */
++				if (!(fs->flags &
++				      EXT2_FLAG_IGNORE_CSUM_ERRORS) &&
++				    !ext2fs_inode_bitmap_csum_verify(fs, i,
++						inode_bitmap, inode_nbytes)) {
++					retval =
++					EXT2_ET_INODE_BITMAP_CSUM_INVALID;
++					goto cleanup;
++				}
+ 			} else
+ 				memset(inode_bitmap, 0, inode_nbytes);
+ 			cnt = inode_nbytes << 3;
+-- 
+1.7.9.107.g97f9a
+
