@@ -113,28 +113,26 @@ index c31e073..471e3e0 100644
  			return;
  
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index 579c838..a6dd88a 100644
+index 579c838..a2a1a44 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
-@@ -929,8 +929,18 @@ static struct e2fsck_problem problem_table[] = {
- 	/* Quota inode is user visible */
- 	{ PR_1_QUOTA_INODE_NOT_HIDDEN,
- 	  N_("@q @i is visible to the user.  "),
-+	  PROMPT_FIX, PR_PREEN_OK },
-+
+@@ -936,6 +936,16 @@ static struct e2fsck_problem problem_table[] = {
+ 	  N_("The bad @b @i looks @n.  "),
+ 	  PROMPT_CLEAR, 0 },
+ 
 +	/* inode checksum does not match inode */
 +	{ PR_1_INODE_CSUM_INVALID,
 +	  N_("@i %i checksum does not match @i.  "),
- 	  PROMPT_CLEAR, PR_PREEN_OK },
- 
++	  PROMPT_CLEAR, PR_PREEN_OK },
++
 +	/* inode passes checks, but checksum does not match inode */
 +	{ PR_1_INODE_ONLY_CSUM_INVALID,
 +	  N_("@i %i passes checks, but checksum does not match @i.  "),
 +	  PROMPT_FIX, PR_PREEN_OK },
 +
- 	/* Invalid bad inode */
- 	{ PR_1_INVALID_BAD_INODE,
- 	  N_("The bad @b @i looks @n.  "),
+ 	/* Pass 1b errors */
+ 
+ 	/* Pass 1B: Rescan for duplicate/bad blocks */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
 index 3fabc90..5797fe2 100644
 --- a/e2fsck/problem.h
@@ -152,6 +150,3 @@ index 3fabc90..5797fe2 100644
  /*
   * Pass 1b errors
   */
--- 
-1.7.9.107.g97f9a
-
