@@ -57,7 +57,7 @@ index ce03e46..debc365 100644
  	if (count)
  		ea_refcount_store(ctx->refcount, blk, count);
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index d910629..ad6887e 100644
+index 70dd8c1..b1faba0 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
 @@ -961,6 +961,21 @@ static struct e2fsck_problem problem_table[] = {
@@ -74,7 +74,7 @@ index d910629..ad6887e 100644
 +	 * Extended attribute block passes checks, but checksum for inode does
 +	 * not match.
 +	 */
-+	{ PR_1_EA_BLOCK_CSUM_INVALID,
++	{ PR_1_EA_BLOCK_ONLY_CSUM_INVALID,
 +	  N_("Extended attribute @a @b %b passes checks, but checksum for "
 +	     "@i %i does not match.  "),
 +	  PROMPT_FIX, 0 },
@@ -99,6 +99,3 @@ index eb70d61..b8a7548 100644
  /*
   * Pass 1b errors
   */
--- 
-1.7.9.107.g97f9a
-
