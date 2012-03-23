@@ -134,18 +134,18 @@ index 579c838..a2a1a44 100644
  
  	/* Pass 1B: Rescan for duplicate/bad blocks */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 3fabc90..5797fe2 100644
+index f2bd414..231a296 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -550,6 +550,12 @@ struct problem_context {
- /* Invalid bad inode */
- #define PR_1_INVALID_BAD_INODE		0x010065
+@@ -553,6 +553,12 @@ struct problem_context {
+ /* Extent has zero length */
+ #define PR_1_EXTENT_LENGTH_ZERO                0x010066
  
 +/* inode checksum does not match inode */
-+#define PR_1_INODE_CSUM_INVALID		0x010066
++#define PR_1_INODE_CSUM_INVALID                0x010067
 +
 +/* inode passes checks, but checksum does not match inode */
-+#define PR_1_INODE_ONLY_CSUM_INVALID	0x010067
++#define PR_1_INODE_ONLY_CSUM_INVALID   0x010068
 +
  /*
   * Pass 1b errors
