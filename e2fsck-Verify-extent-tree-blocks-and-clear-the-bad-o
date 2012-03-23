@@ -118,18 +118,18 @@ index 7dc4c39..6ceee11 100644
  
  	/* Pass 1B: Rescan for duplicate/bad blocks */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 39e6dba..2adb4b9 100644
+index e482879..100595b 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -556,6 +556,12 @@ struct problem_context {
+@@ -559,6 +559,12 @@ struct problem_context {
  /* inode passes checks, but checksum does not match inode */
- #define PR_1_INODE_ONLY_CSUM_INVALID	0x010067
+ #define PR_1_INODE_ONLY_CSUM_INVALID   0x010068
  
 +/* extent block checksum does not match extent block */
-+#define PR_1_EXTENT_CSUM_INVALID	0x010068
++#define PR_1_EXTENT_CSUM_INVALID       0x010069
 +
 +/* extent block passes checks, but checksum does not match extent block */
-+#define PR_1_EXTENT_ONLY_CSUM_INVALID	0x010069
++#define PR_1_EXTENT_ONLY_CSUM_INVALID  0x01006A
 +
  /*
   * Pass 1b errors
