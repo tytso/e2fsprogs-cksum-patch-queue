@@ -11,13 +11,13 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 ---
  e2fsck/pass5.c   |   18 ++++++------------
  e2fsck/problem.c |    9 +++++++++
- e2fsck/problem.h |    5 +++++
+ e2fsck/problem.h |    7 ++++++-
  e2fsck/super.c   |   16 ++++++++++++++--
  e2fsck/unix.c    |    2 +-
- 5 files changed, 35 insertions(+), 15 deletions(-)
+ 5 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index f1ce6d7..c5dba0b 100644
+index e291f12..f7735f7 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
 @@ -88,7 +88,7 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
@@ -60,7 +60,7 @@ index f1ce6d7..c5dba0b 100644
  
  	clear_problem_context(&pctx);
  	for (i = 0; i < ctx->fs->group_desc_count; i++) {
-@@ -322,8 +318,7 @@ static void check_block_bitmaps(e2fsck_t ctx)
+@@ -378,8 +374,7 @@ static void check_block_bitmaps(e2fsck_t ctx)
  		goto errout;
  	}
  
@@ -70,7 +70,7 @@ index f1ce6d7..c5dba0b 100644
  redo_counts:
  	had_problem = 0;
  	save_problem = 0;
-@@ -599,8 +594,7 @@ static void check_inode_bitmaps(e2fsck_t ctx)
+@@ -664,8 +659,7 @@ static void check_inode_bitmaps(e2fsck_t ctx)
  		goto errout;
  	}
  
@@ -81,12 +81,12 @@ index f1ce6d7..c5dba0b 100644
  	had_problem = 0;
  	save_problem = 0;
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index ad6887e..8c55721 100644
+index f4021a5..f055d2b 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
-@@ -423,6 +423,15 @@ static struct e2fsck_problem problem_table[] = {
- 	  N_("@S has invalid MMP magic.  "),
- 	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
+@@ -433,6 +433,15 @@ static struct e2fsck_problem problem_table[] = {
+ 	  N_("ext2fs_check_desc: %m\n"),
+ 	  PROMPT_NONE, 0 },
  
 +	/*
 +	 * metadata_csum implies uninit_bg; both feature bits cannot
@@ -101,23 +101,32 @@ index ad6887e..8c55721 100644
  
  	/* Pass 1: Checking inodes, blocks, and sizes */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index b8a7548..e47984c 100644
+index 8716e11..703fb41 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -242,6 +242,11 @@ struct problem_context {
- /* Superblock has invalid MMP magic. */
- #define PR_0_MMP_INVALID_MAGIC			0x000043
+@@ -250,6 +250,12 @@ struct problem_context {
+ #define PR_0_CHECK_DESC_FAILED			0x000045
  
-+/*
+ /*
 + * metadata_csum supersedes uninit_bg; both feature bits cannot be set
 + * simultaneously.
 + */
-+#define PR_0_META_AND_GDT_CSUM_SET		0x000044
- 
- /*
++#define PR_0_META_AND_GDT_CSUM_SET		0x000046
++
++/*
   * Pass 1 errors
+  */
+ 
+@@ -604,7 +610,6 @@ struct problem_context {
+ /* Error adjusting EA refcount */
+ #define PR_1B_ADJ_EA_REFCOUNT	0x011007
+ 
+-
+ /* Pass 1C: Scan directories for inodes with dup blocks. */
+ #define PR_1C_PASS_HEADER	0x012000
+ 
 diff --git a/e2fsck/super.c b/e2fsck/super.c
-index dbd337c..939a71e 100644
+index f83f74f..4c61c4c 100644
 --- a/e2fsck/super.c
 +++ b/e2fsck/super.c
 @@ -577,14 +577,26 @@ void check_super_block(e2fsck_t ctx)
@@ -150,10 +159,10 @@ index dbd337c..939a71e 100644
  		pctx.group = i;
  
 diff --git a/e2fsck/unix.c b/e2fsck/unix.c
-index a8e3775..678ce9b 100644
+index 8cdac27..262a7ff 100644
 --- a/e2fsck/unix.c
 +++ b/e2fsck/unix.c
-@@ -1653,7 +1653,7 @@ no_journal:
+@@ -1703,7 +1703,7 @@ no_journal:
  	}
  
  	if ((run_result & E2F_FLAG_CANCEL) == 0 &&
@@ -162,6 +171,3 @@ index a8e3775..678ce9b 100644
  	    !(ctx->options & E2F_OPT_READONLY)) {
  		retval = ext2fs_set_gdt_csum(ctx->fs);
  		if (retval) {
--- 
-1.7.9.107.g97f9a
-

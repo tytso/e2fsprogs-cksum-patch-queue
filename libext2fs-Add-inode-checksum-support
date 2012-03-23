@@ -17,7 +17,7 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
  6 files changed, 131 insertions(+), 10 deletions(-)
 
 diff --git a/lib/ext2fs/csum.c b/lib/ext2fs/csum.c
-index 596923e..5091a00 100644
+index 9fa3f24..bdae9f1 100644
 --- a/lib/ext2fs/csum.c
 +++ b/lib/ext2fs/csum.c
 @@ -30,6 +30,88 @@
@@ -106,7 +106,7 @@ index 596923e..5091a00 100644
 +	return 0;
 +}
 +
- STATIC __u16 ext2fs_group_desc_csum(ext2_filsys fs, dgrp_t group)
+ __u16 ext2fs_group_desc_csum(ext2_filsys fs, dgrp_t group)
  {
  	__u16 crc = 0;
 diff --git a/lib/ext2fs/ext2_err.et.in b/lib/ext2fs/ext2_err.et.in
@@ -122,7 +122,7 @@ index ccf1894..d4a5b10 100644
 +
  	end
 diff --git a/lib/ext2fs/ext2_fs.h b/lib/ext2fs/ext2_fs.h
-index b0b798b..3ec48a2 100644
+index 68155a3..3636d47 100644
 --- a/lib/ext2fs/ext2_fs.h
 +++ b/lib/ext2fs/ext2_fs.h
 @@ -460,6 +460,10 @@ struct ext2_inode_large {
@@ -137,7 +137,7 @@ index b0b798b..3ec48a2 100644
  
  #if defined(__KERNEL__) || defined(__linux__)
 diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
-index f7a73e5..1728599 100644
+index 9f5ac22..c761b6e 100644
 --- a/lib/ext2fs/ext2fs.h
 +++ b/lib/ext2fs/ext2fs.h
 @@ -948,6 +948,10 @@ extern __u32 ext2fs_crc32c_be(__u32 crc, unsigned char const *p, size_t len);
@@ -152,7 +152,7 @@ index f7a73e5..1728599 100644
  extern int ext2fs_group_desc_csum_verify(ext2_filsys fs, dgrp_t group);
  extern errcode_t ext2fs_set_gdt_csum(ext2_filsys fs);
 diff --git a/lib/ext2fs/inode.c b/lib/ext2fs/inode.c
-index a4f6670..74703c5 100644
+index adb2324..0c62596 100644
 --- a/lib/ext2fs/inode.c
 +++ b/lib/ext2fs/inode.c
 @@ -417,7 +417,7 @@ errcode_t ext2fs_get_next_inode_full(ext2_inode_scan scan, ext2_ino_t *ino,
@@ -283,6 +283,3 @@ index b12bf2d..861ddab 100644
  	if (retval)
  		goto cleanup;
  
--- 
-1.7.9.107.g97f9a
-

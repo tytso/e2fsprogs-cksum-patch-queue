@@ -45,7 +45,7 @@ index ed548d1..bbb0aaa 100644
  
  struct ext2_ext_attr_entry {
 diff --git a/lib/ext2fs/ext2_fs.h b/lib/ext2fs/ext2_fs.h
-index 3b01285..b0b798b 100644
+index 20decff..68155a3 100644
 --- a/lib/ext2fs/ext2_fs.h
 +++ b/lib/ext2fs/ext2_fs.h
 @@ -235,6 +235,13 @@ struct ext2_dx_countlimit {
@@ -145,7 +145,7 @@ index 3b01285..b0b798b 100644
  
  /*
 diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
-index 682f0cd..bde22b6 100644
+index 4e7711a..95dec80 100644
 --- a/lib/ext2fs/ext2fs.h
 +++ b/lib/ext2fs/ext2fs.h
 @@ -199,6 +199,7 @@ typedef struct ext2_file *ext2_file_t;
@@ -179,15 +179,15 @@ index 88fabc9..4163436 100644
   * it's used at the bottom of the tree
   */
 diff --git a/lib/ext2fs/tst_super_size.c b/lib/ext2fs/tst_super_size.c
-index 6593652..601e41e 100644
+index 76e6e6f..d5d594b 100644
 --- a/lib/ext2fs/tst_super_size.c
 +++ b/lib/ext2fs/tst_super_size.c
-@@ -105,7 +105,7 @@ void check_superblock_fields()
- 	check_field(s_mmp_block);
- 	check_field(s_raid_stripe_width);
- 	check_field(s_log_groups_per_flex);
--	check_field(s_reserved_char_pad);
-+	check_field(s_checksum_type);
- 	check_field(s_reserved_pad);
- 	check_field(s_kbytes_written);
- 	check_field(s_snapshot_inum);
+@@ -110,7 +110,7 @@ int main(int argc, char **argv)
+ 	check_field(s_mmp_block, 8);
+ 	check_field(s_raid_stripe_width, 4);
+ 	check_field(s_log_groups_per_flex, 1);
+-	check_field(s_reserved_char_pad, 1);
++	check_field(s_checksum_type, 1);
+ 	check_field(s_reserved_pad, 2);
+ 	check_field(s_kbytes_written, 8);
+ 	check_field(s_snapshot_inum, 4);

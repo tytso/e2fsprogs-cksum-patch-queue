@@ -25,10 +25,10 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
  11 files changed, 66 insertions(+), 62 deletions(-)
 
 diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
-index 36dd730..2e46cd5 100644
+index 882a7d2..cb2474e 100644
 --- a/debugfs/debugfs.c
 +++ b/debugfs/debugfs.c
-@@ -357,8 +357,7 @@ void do_show_super_stats(int argc, char *argv[])
+@@ -358,8 +358,7 @@ void do_show_super_stats(int argc, char *argv[])
  		return;
  	}
  
@@ -39,7 +39,7 @@ index 36dd730..2e46cd5 100644
  		fprintf(out, " Group %2d: block bitmap at %llu, "
  		        "inode bitmap at %llu, "
 diff --git a/lib/ext2fs/alloc.c b/lib/ext2fs/alloc.c
-index 948a0ec..e62ed68 100644
+index bcdc2d4..589ccaf 100644
 --- a/lib/ext2fs/alloc.c
 +++ b/lib/ext2fs/alloc.c
 @@ -36,8 +36,7 @@ static void check_block_uninit(ext2_filsys fs, ext2fs_block_bitmap map,
@@ -77,10 +77,10 @@ index adec363..4229084 100644
  			ext2fs_bg_itable_unused(fs, group) +
  			group * fs->super->s_inodes_per_group + 1;
 diff --git a/lib/ext2fs/csum.c b/lib/ext2fs/csum.c
-index 11a24f0..d4f98e0 100644
+index 9573bb2..7004473 100644
 --- a/lib/ext2fs/csum.c
 +++ b/lib/ext2fs/csum.c
-@@ -696,39 +696,56 @@ STATIC __u16 ext2fs_group_desc_csum(ext2_filsys fs, dgrp_t group)
+@@ -696,39 +696,56 @@ __u16 ext2fs_group_desc_csum(ext2_filsys fs, dgrp_t group)
  
  	desc = ext2fs_group_desc(fs, fs->group_desc, group);
  
@@ -180,7 +180,7 @@ index 11a24f0..d4f98e0 100644
  
  	for (i = 0; i < fs->group_desc_count; i++) {
 diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
-index 9574525..eeac04d 100644
+index 275c91d..dc2ec9d 100644
 --- a/lib/ext2fs/ext2fs.h
 +++ b/lib/ext2fs/ext2fs.h
 @@ -642,6 +642,12 @@ typedef struct stat ext2fs_struct_stat;
@@ -197,10 +197,10 @@ index 9574525..eeac04d 100644
  /* alloc.c */
  extern errcode_t ext2fs_new_inode(ext2_filsys fs, ext2_ino_t dir, int mode,
 diff --git a/lib/ext2fs/initialize.c b/lib/ext2fs/initialize.c
-index a63ea18..a22cab4 100644
+index b06371c..7ba543f 100644
 --- a/lib/ext2fs/initialize.c
 +++ b/lib/ext2fs/initialize.c
-@@ -435,8 +435,7 @@ ipg_retry:
+@@ -437,8 +437,7 @@ ipg_retry:
  	 * bitmaps will be accounted for when allocated).
  	 */
  	free_blocks = 0;
@@ -211,7 +211,7 @@ index a63ea18..a22cab4 100644
  		/*
  		 * Don't set the BLOCK_UNINIT group for the last group
 diff --git a/lib/ext2fs/inode.c b/lib/ext2fs/inode.c
-index 74703c5..3e6d853 100644
+index 0c62596..0d6e81d 100644
 --- a/lib/ext2fs/inode.c
 +++ b/lib/ext2fs/inode.c
 @@ -157,8 +157,7 @@ errcode_t ext2fs_open_inode_scan(ext2_filsys fs, int buffer_blocks,
@@ -245,10 +245,10 @@ index 74703c5..3e6d853 100644
  			ext2fs_bg_itable_unused(fs, scan->current_group);
  		scan->blocks_left =
 diff --git a/lib/ext2fs/openfs.c b/lib/ext2fs/openfs.c
-index d2b64f4..2dc9b94 100644
+index 7c45166..fa36213 100644
 --- a/lib/ext2fs/openfs.c
 +++ b/lib/ext2fs/openfs.c
-@@ -382,8 +382,7 @@ errcode_t ext2fs_open2(const char *name, const char *io_options,
+@@ -384,8 +384,7 @@ errcode_t ext2fs_open2(const char *name, const char *io_options,
  	 * If recovery is from backup superblock, Clear _UNININT flags &
  	 * reset bg_itable_unused to zero
  	 */
@@ -303,7 +303,7 @@ index a5097c1..18e18aa 100644
  	retval = ext2fs_get_mem(strlen(fs->device_name) + 80, &buf);
  	if (retval)
 diff --git a/misc/dumpe2fs.c b/misc/dumpe2fs.c
-index 23dec30..40398a7 100644
+index a85bf06..13ff833 100644
 --- a/misc/dumpe2fs.c
 +++ b/misc/dumpe2fs.c
 @@ -114,7 +114,7 @@ static void print_bg_opts(ext2_filsys fs, dgrp_t i)
@@ -319,11 +319,11 @@ index 23dec30..40398a7 100644
  		print_range(first_block, last_block);
  		fputs(")", stdout);
  		print_bg_opts(fs, i);
--		if (fs->super->s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM)
-+		if (ext2fs_has_group_desc_csum(fs))
- 			printf(_("  Checksum 0x%04x, unused inodes %u\n"),
- 			       ext2fs_bg_checksum(fs, i),
- 			       ext2fs_bg_itable_unused(fs, i));
+-		if (fs->super->s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM) {
++		if (ext2fs_has_group_desc_csum(fs)) {
+ 			unsigned csum = ext2fs_bg_checksum(fs, i);
+ 			unsigned exp_csum = ext2fs_group_desc_csum(fs, i);
+ 
 diff --git a/resize/resize2fs.c b/resize/resize2fs.c
 index dc2805d..8a02ff4 100644
 --- a/resize/resize2fs.c
@@ -368,6 +368,3 @@ index dc2805d..8a02ff4 100644
  		    ext2fs_bg_flags_test(old_fs, g, EXT2_BG_BLOCK_UNINIT)) {
  			/*
  			 * The block bitmap is uninitialized, so skip
--- 
-1.7.9.107.g97f9a
-

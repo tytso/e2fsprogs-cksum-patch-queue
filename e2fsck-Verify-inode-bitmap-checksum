@@ -14,7 +14,7 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
  3 files changed, 72 insertions(+), 0 deletions(-)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index 1e836e3..72c4936 100644
+index 148473c..9b9e8e5 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
 @@ -27,6 +27,7 @@ static void check_block_bitmaps(e2fsck_t ctx);
@@ -99,14 +99,14 @@ index 1e836e3..72c4936 100644
 +	ext2fs_free_mem(&buf);
 +}
 +
- static void e2fsck_discard_blocks(e2fsck_t ctx, io_manager manager,
- 				  blk64_t start, blk64_t count)
+ static void e2fsck_discard_blocks(e2fsck_t ctx, blk64_t start,
+ 				  blk64_t count)
  {
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index a6dd88a..2954d73 100644
+index c772ba1..8bd5f6a 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
-@@ -1684,6 +1684,11 @@ static struct e2fsck_problem problem_table[] = {
+@@ -1694,6 +1694,11 @@ static struct e2fsck_problem problem_table[] = {
  	  N_("@g %g @i(s) in use but @g is marked INODE_UNINIT\n"),
  	  PROMPT_FIX, PR_PREEN_OK },
  
@@ -119,10 +119,10 @@ index a6dd88a..2954d73 100644
  
  	/* Recreate journal if E2F_FLAG_JOURNAL_INODE flag is set */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 5797fe2..0adc7ea 100644
+index 66cb29f..ee690b4 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -1019,6 +1019,9 @@ struct problem_context {
+@@ -1027,6 +1027,9 @@ struct problem_context {
  /* Inode in use but group is marked INODE_UNINIT */
  #define PR_5_INODE_UNINIT		0x050019
  
@@ -132,6 +132,3 @@ index 5797fe2..0adc7ea 100644
  /*
   * Post-Pass 5 errors
   */
--- 
-1.7.9.107.g97f9a
-

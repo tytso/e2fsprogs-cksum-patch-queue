@@ -15,7 +15,7 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
  3 files changed, 73 insertions(+), 0 deletions(-)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index 72c4936..6aa2558 100644
+index 9b9e8e5..e291f12 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
 @@ -28,6 +28,7 @@ static void check_inode_bitmaps(e2fsck_t ctx);
@@ -101,14 +101,14 @@ index 72c4936..6aa2558 100644
 +	ext2fs_free_mem(&buf);
 +}
 +
- static void e2fsck_discard_blocks(e2fsck_t ctx, io_manager manager,
- 				  blk64_t start, blk64_t count)
+ static void e2fsck_discard_blocks(e2fsck_t ctx, blk64_t start,
+ 				  blk64_t count)
  {
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index 79ad34d..8476bc2 100644
+index 8bd5f6a..ddc535f 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
-@@ -1689,6 +1689,11 @@ static struct e2fsck_problem problem_table[] = {
+@@ -1699,6 +1699,11 @@ static struct e2fsck_problem problem_table[] = {
  	  N_("@g %g @i bitmap does not match checksum\n"),
  	  PROMPT_FIX, PR_LATCH_IBITMAP | PR_PREEN_OK },
  
@@ -121,10 +121,10 @@ index 79ad34d..8476bc2 100644
  
  	/* Recreate journal if E2F_FLAG_JOURNAL_INODE flag is set */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 0adc7ea..39e6dba 100644
+index ee690b4..e42c4b6 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -1022,6 +1022,9 @@ struct problem_context {
+@@ -1030,6 +1030,9 @@ struct problem_context {
  /* Inode bitmap checksum does not match */
  #define PR_5_INODE_BITMAP_CSUM_INVALID	0x05001A
  
