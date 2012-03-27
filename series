@@ -1,4 +1,4 @@
-# to applied against e2fsprogs commit 5c7302de
+# to applied against e2fsprogs v1.42.2
 
 libext2fs-Read-and-write-full-size-inodes
 libext2fs-Change-ext4-on-disk-layout-to-support-meta

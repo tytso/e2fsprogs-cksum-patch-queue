@@ -14,8 +14,8 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 
 diff --git a/misc/mke2fs.conf b/misc/mke2fs.conf
 index 0871f77..178733f 100644
---- a/misc/mke2fs.conf
-+++ b/misc/mke2fs.conf
+--- a/misc/mke2fs.conf.in
++++ b/misc/mke2fs.conf.in
 @@ -16,7 +16,7 @@
  		inode_size = 256
  	}
