@@ -1,0 +1,49 @@
+mke2fs: make it support inline data feature
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+EXT2_FEATURE_COMPAT_EXT_ATTR flag will be set when inline_data is set
+because inline data feature depends on it.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ misc/mke2fs.c |   10 +++++++++-
+ 1 files changed, 9 insertions(+), 1 deletions(-)
+
+diff --git a/misc/mke2fs.c b/misc/mke2fs.c
+index 7ec8cc2..145a6a8 100644
+--- a/misc/mke2fs.c
++++ b/misc/mke2fs.c
+@@ -856,7 +856,8 @@ static __u32 ok_features[3] = {
+ 		EXT2_FEATURE_INCOMPAT_META_BG|
+ 		EXT4_FEATURE_INCOMPAT_FLEX_BG|
+ 		EXT4_FEATURE_INCOMPAT_MMP |
+-		EXT4_FEATURE_INCOMPAT_64BIT,
++		EXT4_FEATURE_INCOMPAT_64BIT|
++		EXT4_FEATURE_INCOMPAT_INLINE_DATA,
+ 	/* R/O compat */
+ 	EXT2_FEATURE_RO_COMPAT_LARGE_FILE|
+ 		EXT4_FEATURE_RO_COMPAT_HUGE_FILE|
+@@ -1922,6 +1923,13 @@ profile_error:
+ 		exit(1);
+ 	}
+ 
++	/* if inline_data is set, ext_attr would be set because inline_data
++	 * depends on it.
++	 */
++	if ((fs_param.s_feature_incompat & EXT4_FEATURE_INCOMPAT_INLINE_DATA) &&
++	    !(fs_param.s_feature_compat & EXT2_FEATURE_COMPAT_EXT_ATTR))
++		fs_param.s_feature_compat |= EXT2_FEATURE_COMPAT_EXT_ATTR;
++
+ 	if (fs_param.s_blocks_per_group) {
+ 		if (fs_param.s_blocks_per_group < 256 ||
+ 		    fs_param.s_blocks_per_group > 8 * (unsigned) blocksize) {
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

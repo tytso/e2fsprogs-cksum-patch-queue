@@ -1,0 +1,60 @@
+e2fsck: add three problem descriptions in pass1
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+In pass1, we will meet three problems.  So add descriptions in problem
+table.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ e2fsck/problem.c |   15 +++++++++++++++
+ e2fsck/problem.h |    9 +++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/e2fsck/problem.c b/e2fsck/problem.c
+index 286257d..e55372d 100644
+--- a/e2fsck/problem.c
++++ b/e2fsck/problem.c
+@@ -1000,6 +1000,21 @@ static struct e2fsck_problem problem_table[] = {
+ 	     "@i %i does not match.  "),
+ 	  PROMPT_FIX, 0 },
+ 
++	/* INLINE_DATA is set and EXT_ATTR is not set */
++	{ PR_1_INLINE_DATA_AND_EXT_ATTR,
++	  N_("INLINE_DATA is set in @S, but it is missing EXT_ATTR feature\n"),
++	  PROMPT_FIX, 0 },
++
++	/* Inode has inline data, superblock missing INCOMPAT_INLINE_DATA feature */
++	{ PR_1_INLINE_DATA_FEATURE,
++	  N_("@i %i is in inline data format, but @S is missing INLINEDATA feature\n"),
++	  PROMPT_CLEAR, PR_PREEN_OK },
++
++	/* INLINE_DATA_FL flag set on a non-inline-data filesystem */
++	{ PR_1_INLINE_DATA_SET,
++	  N_("@i %i has INLINE_DATA_FL flag set on @f without inline data support.\n"),
++	  PROMPT_CLEAR, 0 },
++
+ 	/* Pass 1b errors */
+ 
+ 	/* Pass 1B: Rescan for duplicate/bad blocks */
+diff --git a/e2fsck/problem.h b/e2fsck/problem.h
+index 5caade4..4ea2b2d 100644
+--- a/e2fsck/problem.h
++++ b/e2fsck/problem.h
+@@ -587,6 +587,15 @@ struct problem_context {
+ #define PR_1_EA_BLOCK_ONLY_CSUM_INVALID        0x01006C
+ 
+ 
++/* INLINE_DATA is set and EXT_ATTR is not set */
++#define PR_1_INLINE_DATA_AND_EXT_ATTR	0x01006D
++
++/* Inode has inline data, superblock missing INCOMPAT_INLINE_DATA feature */
++#define PR_1_INLINE_DATA_FEATURE	0x01006E
++
++/* INLINE_DATA_FL flag set on a non-inline-data capable filesystem */
++#define PR_1_INLINE_DATA_SET		0x01006F
++
+ /*
+  * Pass 1b errors
+  */

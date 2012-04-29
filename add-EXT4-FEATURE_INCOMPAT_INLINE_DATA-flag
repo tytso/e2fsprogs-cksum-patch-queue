@@ -1,0 +1,58 @@
+libext2fs: add EXT4_FEATURE_INCOMPAT_INLINE_DATA flag
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Add EXT4_FEATURE_INCOMPAT_INLINE_DATA flag to support inline
+data feature.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/ext2_fs.h |    1 +
+ lib/ext2fs/ext2fs.h  |    6 ++++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/lib/ext2fs/ext2_fs.h b/lib/ext2fs/ext2_fs.h
+index 20decff..4914946 100644
+--- a/lib/ext2fs/ext2_fs.h
++++ b/lib/ext2fs/ext2_fs.h
+@@ -721,6 +721,7 @@ struct ext2_super_block {
+ #define EXT4_FEATURE_INCOMPAT_FLEX_BG		0x0200
+ #define EXT4_FEATURE_INCOMPAT_EA_INODE		0x0400
+ #define EXT4_FEATURE_INCOMPAT_DIRDATA		0x1000
++#define EXT4_FEATURE_INCOMPAT_INLINE_DATA	0x2000
+ 
+ #define EXT2_FEATURE_COMPAT_SUPP	0
+ #define EXT2_FEATURE_INCOMPAT_SUPP    (EXT2_FEATURE_INCOMPAT_FILETYPE| \
+diff --git a/lib/ext2fs/ext2fs.h b/lib/ext2fs/ext2fs.h
+index fda6ade..89815eb 100644
+--- a/lib/ext2fs/ext2fs.h
++++ b/lib/ext2fs/ext2fs.h
+@@ -576,7 +576,8 @@ typedef struct ext2_icount *ext2_icount_t;
+ 					 EXT3_FEATURE_INCOMPAT_EXTENTS|\
+ 					 EXT4_FEATURE_INCOMPAT_FLEX_BG|\
+ 					 EXT4_FEATURE_INCOMPAT_MMP|\
+-					 EXT4_FEATURE_INCOMPAT_64BIT)
++					 EXT4_FEATURE_INCOMPAT_64BIT|\
++					 EXT4_FEATURE_INCOMPAT_INLINE_DATA)
+ #else
+ #define EXT2_LIB_FEATURE_INCOMPAT_SUPP	(EXT2_FEATURE_INCOMPAT_FILETYPE|\
+ 					 EXT3_FEATURE_INCOMPAT_JOURNAL_DEV|\
+@@ -585,7 +586,8 @@ typedef struct ext2_icount *ext2_icount_t;
+ 					 EXT3_FEATURE_INCOMPAT_EXTENTS|\
+ 					 EXT4_FEATURE_INCOMPAT_FLEX_BG|\
+ 					 EXT4_FEATURE_INCOMPAT_MMP|\
+-					 EXT4_FEATURE_INCOMPAT_64BIT)
++					 EXT4_FEATURE_INCOMPAT_64BIT|\
++					 EXT4_FEATURE_INCOMPAT_INLINE_DATA)
+ #endif
+ #ifdef CONFIG_QUOTA
+ #define EXT2_LIB_FEATURE_RO_COMPAT_SUPP	(EXT2_FEATURE_RO_COMPAT_SPARSE_SUPER|\
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

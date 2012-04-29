@@ -1,0 +1,32 @@
+libext2fs: add EXT4_INLINE_DATA_FL flag for inode
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Add EXT4_INLINE_DATA_FL flag.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/ext2_fs.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/lib/ext2fs/ext2_fs.h b/lib/ext2fs/ext2_fs.h
+index 4914946..0f0239b 100644
+--- a/lib/ext2fs/ext2_fs.h
++++ b/lib/ext2fs/ext2_fs.h
+@@ -301,6 +301,7 @@ struct ext2_dx_countlimit {
+ #define EXT4_EXTENTS_FL 		0x00080000 /* Inode uses extents */
+ #define EXT4_EA_INODE_FL	        0x00200000 /* Inode used for large EA */
+ /* EXT4_EOFBLOCKS_FL 0x00400000 was here */
++#define EXT4_INLINE_DATA_FL		0x00800000 /* Inode has inline data */
+ #define EXT4_SNAPFILE_FL		0x01000000  /* Inode is a snapshot */
+ #define EXT4_SNAPFILE_DELETED_FL	0x04000000  /* Snapshot is being deleted */
+ #define EXT4_SNAPFILE_SHRUNK_FL		0x08000000  /* Snapshot shrink has completed */
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

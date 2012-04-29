@@ -1,0 +1,36 @@
+debugfs: make pwd cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/get_pathname.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+diff --git a/lib/ext2fs/get_pathname.c b/lib/ext2fs/get_pathname.c
+index 52aea62..f92f17d 100644
+--- a/lib/ext2fs/get_pathname.c
++++ b/lib/ext2fs/get_pathname.c
+@@ -98,7 +98,12 @@ static errcode_t ext2fs_get_pathname_int(ext2_filsys fs, ext2_ino_t dir,
+ 	gp.name = 0;
+ 	gp.errcode = 0;
+ 
+-	retval = ext2fs_dir_iterate(fs, dir, 0, buf, get_pathname_proc, &gp);
++	if (ext2fs_has_inline_data(fs, dir))
++		retval = ext2fs_inline_data_iterate(fs, dir, 0, buf,
++						    get_pathname_proc, &gp);
++	else
++		retval = ext2fs_dir_iterate(fs, dir, 0, buf,
++					    get_pathname_proc, &gp);
+ 	if (retval == EXT2_ET_NO_DIRECTORY) {
+ 		char tmp[32];
+ 
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

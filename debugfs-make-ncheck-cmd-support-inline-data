@@ -1,0 +1,40 @@
+debugfs: make ncheck cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+When inode has inline data, ext2fs_inline_data_iterate function is called
+to traverse dirs.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/ncheck.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/debugfs/ncheck.c b/debugfs/ncheck.c
+index 58f3a50..6dda919 100644
+--- a/debugfs/ncheck.c
++++ b/debugfs/ncheck.c
+@@ -171,8 +171,12 @@ void do_ncheck(int argc, char **argv)
+ 		iw.dir = ino;
+ 		iw.get_pathname_failed = 0;
+ 
+-		retval = ext2fs_dir_iterate(current_fs, ino, 0, 0,
+-					    ncheck_proc, &iw);
++		if (ext2fs_has_inline_data(current_fs, ino))
++			retval = ext2fs_inline_data_iterate(current_fs, ino, 0,
++							    0, ncheck_proc, &iw);
++		else
++			retval = ext2fs_dir_iterate(current_fs, ino, 0, 0,
++						    ncheck_proc, &iw);
+ 		ext2fs_free_mem(&iw.parent);
+ 		if (retval) {
+ 			com_err("ncheck", retval,
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

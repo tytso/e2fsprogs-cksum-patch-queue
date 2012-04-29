@@ -1,0 +1,38 @@
+debugfs: make unlink cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/unlink.c |    9 +++++++--
+ 1 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/lib/ext2fs/unlink.c b/lib/ext2fs/unlink.c
+index d2d31cc..6852d4a 100644
+--- a/lib/ext2fs/unlink.c
++++ b/lib/ext2fs/unlink.c
+@@ -90,8 +90,13 @@ errcode_t ext2fs_unlink(ext2_filsys fs, ext2_ino_t dir,
+ 	ls.done = 0;
+ 	ls.prev = 0;
+ 
+-	retval = ext2fs_dir_iterate(fs, dir, DIRENT_FLAG_INCLUDE_EMPTY,
+-				    0, unlink_proc, &ls);
++	if (ext2fs_has_inline_data(fs, dir))
++		retval = ext2fs_inline_data_iterate(fs, dir,
++					DIRENT_FLAG_INCLUDE_EMPTY, 0,
++					unlink_proc, &ls);
++	else
++		retval = ext2fs_dir_iterate(fs, dir, DIRENT_FLAG_INCLUDE_EMPTY,
++					    0, unlink_proc, &ls);
+ 	if (retval)
+ 		return retval;
+ 
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

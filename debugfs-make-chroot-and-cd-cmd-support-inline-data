@@ -1,0 +1,38 @@
+debugfs: make chroot and cd cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Both chroot and cd command call ext2fs_lookup.  So we can let it supoort
+inline data simultaneously.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/lookup.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/lib/ext2fs/lookup.c b/lib/ext2fs/lookup.c
+index 0e66e71..9835082 100644
+--- a/lib/ext2fs/lookup.c
++++ b/lib/ext2fs/lookup.c
+@@ -60,7 +60,11 @@ errcode_t ext2fs_lookup(ext2_filsys fs, ext2_ino_t dir, const char *name,
+ 	ls.inode = inode;
+ 	ls.found = 0;
+ 
+-	retval = ext2fs_dir_iterate(fs, dir, 0, buf, lookup_proc, &ls);
++	if (ext2fs_has_inline_data(fs, dir))
++		retval = ext2fs_inline_data_iterate(fs, dir, 0, buf,
++						    lookup_proc, &ls);
++	else
++		retval = ext2fs_dir_iterate(fs, dir, 0, buf, lookup_proc, &ls);
+ 	if (retval)
+ 		return retval;
+ 
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

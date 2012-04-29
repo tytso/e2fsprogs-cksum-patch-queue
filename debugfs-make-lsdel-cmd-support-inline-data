@@ -1,0 +1,49 @@
+debugfs: make lsdel cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/lsdel.c |   19 +++++++++++--------
+ 1 files changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/debugfs/lsdel.c b/debugfs/lsdel.c
+index bed0ce6..ff283cd 100644
+--- a/debugfs/lsdel.c
++++ b/debugfs/lsdel.c
+@@ -141,15 +141,18 @@ void do_lsdel(int argc, char **argv)
+ 		lsd.free_blocks = 0;
+ 		lsd.bad_blocks = 0;
+ 
+-		retval = ext2fs_block_iterate3(current_fs, ino,
+-					       BLOCK_FLAG_READ_ONLY, block_buf,
+-					       lsdel_proc, &lsd);
+-		if (retval) {
+-			com_err("ls_deleted_inodes", retval,
+-				"while calling ext2fs_block_iterate2");
+-			goto next;
++		if (!ext2fs_has_inline_data(current_fs, ino)) {
++			retval = ext2fs_block_iterate3(current_fs, ino,
++						       BLOCK_FLAG_READ_ONLY, block_buf,
++						       lsdel_proc, &lsd);
++			if (retval) {
++				com_err("ls_deleted_inodes", retval,
++					"while calling ext2fs_block_iterate2");
++				goto next;
++			}
+ 		}
+-		if (lsd.free_blocks && !lsd.bad_blocks) {
++		if (lsd.free_blocks && !lsd.bad_blocks ||
++		    ext2fs_has_inline_data(current_fs, ino)) {
+ 			if (num_delarray >= max_delarray) {
+ 				max_delarray += 50;
+ 				delarray = realloc(delarray,
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

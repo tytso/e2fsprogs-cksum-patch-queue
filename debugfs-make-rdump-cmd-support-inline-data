@@ -1,0 +1,37 @@
+debugfs: make rdump cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/dump.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/debugfs/dump.c b/debugfs/dump.c
+index 10ebe7a..84de606 100644
+--- a/debugfs/dump.c
++++ b/debugfs/dump.c
+@@ -308,8 +308,12 @@ static void rdump_inode(ext2_ino_t ino, struct ext2_inode *inode,
+ 			goto errout;
+ 		}
+ 
+-		retval = ext2fs_dir_iterate(current_fs, ino, 0, 0,
+-					    rdump_dirent, (void *) fullname);
++		if (ext2fs_has_inline_data(current_fs, ino))
++			retval = ext2fs_inline_data_iterate(current_fs, ino, 0, 0,
++							    rdump_dirent, (void *) fullname);
++		else
++			retval = ext2fs_dir_iterate(current_fs, ino, 0, 0,
++						    rdump_dirent, (void *) fullname);
+ 		if (retval)
+ 			com_err("rdump", retval, "while dumping %s", fullname);
+ 
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

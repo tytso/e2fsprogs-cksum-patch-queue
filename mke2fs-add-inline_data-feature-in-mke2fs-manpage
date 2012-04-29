@@ -1,0 +1,34 @@
+mke2fs: add inline_data feature in mke2fs's manpage
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Update mke2fs's manpage.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ misc/mke2fs.8.in |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/misc/mke2fs.8.in b/misc/mke2fs.8.in
+index 6d443a2..bfe6c94 100644
+--- a/misc/mke2fs.8.in
++++ b/misc/mke2fs.8.in
+@@ -551,6 +551,9 @@ option).
+ @JDEV@must be created with the same
+ @JDEV@block size as the filesystems that will be using it.
+ .TP
++.B inline_data
++Allow data to be stored in inode
++.TP
+ .B large_file
+ Filesystem can contain files that are greater than 2GB.  (Modern kernels
+ set this feature automatically when a file > 2GB is created.)
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

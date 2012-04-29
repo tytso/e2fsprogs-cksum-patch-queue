@@ -1,0 +1,37 @@
+debugfs: make expand_dir cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ lib/ext2fs/expanddir.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/lib/ext2fs/expanddir.c b/lib/ext2fs/expanddir.c
+index 41c4088..8caa97b 100644
+--- a/lib/ext2fs/expanddir.c
++++ b/lib/ext2fs/expanddir.c
+@@ -111,8 +111,12 @@ errcode_t ext2fs_expand_dir(ext2_filsys fs, ext2_ino_t dir)
+ 	es.goal = 0;
+ 	es.newblocks = 0;
+ 
+-	retval = ext2fs_block_iterate3(fs, dir, BLOCK_FLAG_APPEND,
+-				       0, expand_dir_proc, &es);
++	if (ext2fs_has_inline_data(fs, dir))
++		retval = ext2fs_inline_data_expand_dir(fs, dir, BLOCK_CHANGED,
++						       0, expand_dir_proc, &es);
++	else
++		retval = ext2fs_block_iterate3(fs, dir, BLOCK_FLAG_APPEND,
++					       0, expand_dir_proc, &es);
+ 
+ 	if (es.err)
+ 		return es.err;
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

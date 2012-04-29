@@ -1,0 +1,37 @@
+debugfs: make rmdir cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/debugfs.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
+index 17e5ec8..7a97c48 100644
+--- a/debugfs/debugfs.c
++++ b/debugfs/debugfs.c
+@@ -1948,8 +1948,12 @@ void do_rmdir(int argc, char *argv[])
+ 	rds.parent = 0;
+ 	rds.empty = 1;
+ 
+-	retval = ext2fs_dir_iterate2(current_fs, inode_num, 0,
+-				    0, rmdir_proc, &rds);
++	if (ext2fs_has_inline_data(current_fs, inode_num))
++		retval = ext2fs_inline_data_iterate2(current_fs, inode_num, 0,
++						     0, rmdir_proc, &rds);
++	else
++		retval = ext2fs_dir_iterate2(current_fs, inode_num, 0,
++					    0, rmdir_proc, &rds);
+ 	if (retval) {
+ 		com_err(argv[0], retval, "while iterating over directory");
+ 		return;
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

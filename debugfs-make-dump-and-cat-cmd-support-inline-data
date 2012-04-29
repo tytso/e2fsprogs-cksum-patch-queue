@@ -1,0 +1,62 @@
+debugfs: make dump and cat cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+dump and cat command use the same function to read data.  We can
+directly read the data from inode.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/dump.c |   30 ++++++++++++++++++++++++++++++
+ 1 files changed, 30 insertions(+), 0 deletions(-)
+
+diff --git a/debugfs/dump.c b/debugfs/dump.c
+index a15a0b7..10ebe7a 100644
+--- a/debugfs/dump.c
++++ b/debugfs/dump.c
+@@ -113,6 +113,36 @@ static void dump_file(const char *cmdname, ext2_ino_t ino, int fd,
+ 	if (debugfs_read_inode(ino, &inode, cmdname))
+ 		return;
+ 
++	if (ext2fs_has_inline_data(current_fs, ino)) {
++		struct ext2_inode_large *inode;
++		struct inline_data idata;
++		void *inline_start;
++		int inline_size;
++
++		retval = ext2fs_get_mem(EXT2_INODE_SIZE(current_fs->super),
++							&inode);
++		if (retval)
++			return;
++
++		retval = ext2fs_read_inode_full(current_fs, ino, (void *)inode,
++						EXT2_INODE_SIZE(current_fs->super));
++		if (retval)
++			goto out;
++		write(fd, inode->i_block, EXT4_MIN_INLINE_DATA_SIZE);
++
++		ext2fs_iget_extra_inode(current_fs, inode, &idata);
++		if (idata.inline_off == EXT4_MIN_INLINE_DATA_SIZE)
++			goto out;
++
++		inline_start = ext2fs_get_inline_xattr_pos(inode, &idata);
++		inline_size = idata.inline_size - EXT4_MIN_INLINE_DATA_SIZE;
++		write(fd, inline_start, inline_size);
++
++out:
++		ext2fs_free_mem(&inode);
++		return;
++	}
++
+ 	retval = ext2fs_file_open(current_fs, ino, 0, &e2_file);
+ 	if (retval) {
+ 		com_err(cmdname, retval, "while opening ext2 file");
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

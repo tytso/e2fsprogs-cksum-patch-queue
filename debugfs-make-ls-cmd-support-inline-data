@@ -1,0 +1,37 @@
+debugfs: make ls cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/ls.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/debugfs/ls.c b/debugfs/ls.c
+index b4036de..14e7022 100644
+--- a/debugfs/ls.c
++++ b/debugfs/ls.c
+@@ -170,8 +170,12 @@ void do_list_dir(int argc, char *argv[])
+ 	if (ls.options & DELETED_OPT)
+ 		flags |= DIRENT_FLAG_INCLUDE_REMOVED;
+ 
+-	retval = ext2fs_dir_iterate2(current_fs, inode, flags,
+-				    0, list_dir_proc, &ls);
++	if (ext2fs_has_inline_data(current_fs, inode))
++		retval = ext2fs_inline_data_iterate2(current_fs, inode,flags,
++						     0, list_dir_proc, &ls);
++	else
++		retval = ext2fs_dir_iterate2(current_fs, inode, flags,
++					    0, list_dir_proc, &ls);
+ 	fprintf(ls.f, "\n");
+ 	close_pager(ls.f);
+ 	if (retval)
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

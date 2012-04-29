@@ -1,0 +1,36 @@
+debugfs: make rm and kill_file cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+rm and kill_file command don't need to release blocks.
+
+Signed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/debugfs.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
+index 7a97c48..517751f 100644
+--- a/debugfs/debugfs.c
++++ b/debugfs/debugfs.c
+@@ -1841,8 +1841,9 @@ static void kill_file_by_inode(ext2_ino_t inode)
+ 	if (!ext2fs_inode_has_valid_blocks2(current_fs, &inode_buf))
+ 		return;
+ 
+-	ext2fs_block_iterate3(current_fs, inode, BLOCK_FLAG_READ_ONLY, NULL,
+-			      release_blocks_proc, NULL);
++	if (!ext2fs_has_inline_data(current_fs, inode))
++		ext2fs_block_iterate3(current_fs, inode, BLOCK_FLAG_READ_ONLY,
++				      NULL, release_blocks_proc, NULL);
+ 	printf("\n");
+ 	ext2fs_inode_alloc_stats2(current_fs, inode, -1,
+ 				  LINUX_S_ISDIR(inode_buf.i_mode));
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+

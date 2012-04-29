@@ -1,0 +1,35 @@
+debugfs: make blocks cmd support inline data
+
+From: Zheng Liu <wenqing.lz@taobao.com>
+
+Block entries don't point to blocks.  So it doesn't show anything when
+this inode has inline data.
+
+Singed-off-by: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ debugfs/debugfs.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/debugfs/debugfs.c b/debugfs/debugfs.c
+index df9b954..17e5ec8 100644
+--- a/debugfs/debugfs.c
++++ b/debugfs/debugfs.c
+@@ -958,6 +958,9 @@ void do_blocks(int argc, char *argv[])
+ 		return;
+ 	}
+ 
++	if (ext2fs_has_inline_data(current_fs, inode))
++		return;
++
+ 	ext2fs_block_iterate3(current_fs, inode, BLOCK_FLAG_READ_ONLY, NULL,
+ 			      print_blocks_proc, NULL);
+ 	fputc('\n', stdout);
+-- 
+1.7.4.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ext4" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
