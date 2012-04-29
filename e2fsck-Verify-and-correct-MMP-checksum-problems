@@ -10,13 +10,13 @@ Signed-off-by: Theodore Ts'o <tytso@mit.edu>
  e2fsck/problem.c |    5 +++++
  e2fsck/problem.h |    3 +++
  e2fsck/unix.c    |    5 +++++
- 3 files changed, 13 insertions(+), 0 deletions(-)
+ 3 files changed, 13 insertions(+)
 
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index 8c55721..91617bc 100644
+index a310fdb..286257d 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
-@@ -432,6 +432,11 @@ static struct e2fsck_problem problem_table[] = {
+@@ -442,6 +442,11 @@ static struct e2fsck_problem problem_table[] = {
  	     "bits cannot be set simultaneously."),
  	  PROMPT_FIX, PR_PREEN_OK | PR_NO_OK},
  
@@ -29,24 +29,24 @@ index 8c55721..91617bc 100644
  
  	/* Pass 1: Checking inodes, blocks, and sizes */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index e47984c..f6f1eee 100644
+index db135dc..5caade4 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -248,6 +248,9 @@ struct problem_context {
+@@ -255,6 +255,9 @@ struct problem_context {
   */
- #define PR_0_META_AND_GDT_CSUM_SET		0x000044
+ #define PR_0_META_AND_GDT_CSUM_SET		0x000046
  
 +/* Superblock has invalid MMP checksum. */
-+#define PR_0_MMP_CSUM_INVALID			0x000045
++#define PR_0_MMP_CSUM_INVALID			0x000047
 +
+ 
  /*
   * Pass 1 errors
-  */
 diff --git a/e2fsck/unix.c b/e2fsck/unix.c
-index 678ce9b..d3fb8f8 100644
+index 4c866e6..09c27e5 100644
 --- a/e2fsck/unix.c
 +++ b/e2fsck/unix.c
-@@ -1098,6 +1098,11 @@ check_error:
+@@ -1115,6 +1115,11 @@ check_error:
  			ext2fs_mmp_clear(fs);
  			retval = 0;
  		}
@@ -58,6 +58,3 @@ index 678ce9b..d3fb8f8 100644
  	}
  	return retval;
  }
--- 
-1.7.9.107.g97f9a
-

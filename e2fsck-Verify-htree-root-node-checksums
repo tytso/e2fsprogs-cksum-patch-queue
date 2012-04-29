@@ -2,18 +2,23 @@ e2fsck: verify htree root/node checksums
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Check htree internal node checksums.  If broken, ask user to clear the
-htree index and recreate it later.
+Check htree internal node checksums.  If broken, ask user to clear
+the htree index and recreate it later.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
 ---
+
+v3.1: Only allow lost+found to be rebuilt if metadata_csum is set --
+this is how checksum errors in directories are fixed.  This fixes a
+large number of regressions.
+
  e2fsck/e2fsck.h  |    2 ++
  e2fsck/pass2.c   |   34 +++++++++++++++++++++++++++++-----
  e2fsck/problem.c |   10 ++++++++++
  e2fsck/problem.h |    6 ++++++
- e2fsck/rehash.c  |   41 +++++++++++++++++++++++++++++++++++++++--
- 5 files changed, 86 insertions(+), 7 deletions(-)
+ e2fsck/rehash.c  |   46 +++++++++++++++++++++++++++++++++++++++++++---
+ 5 files changed, 90 insertions(+), 8 deletions(-)
 
 diff --git a/e2fsck/e2fsck.h b/e2fsck/e2fsck.h
 index ed8b0c7..c6dab54 100644
@@ -133,7 +138,7 @@ index 882950d..e4a06f3 100644
  #endif /* ENABLE_HTREE */
  	if (offset != fs->blocksize) {
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index 6ceee11..25db675 100644
+index 0520010..d0f024a 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
 @@ -1383,6 +1383,16 @@ static struct e2fsck_problem problem_table[] = {
@@ -171,7 +176,7 @@ index 2adb4b9..5cf80fb 100644
   * Pass 3 errors
   */
 diff --git a/e2fsck/rehash.c b/e2fsck/rehash.c
-index 15993b3..610b3bf 100644
+index 15993b3..338a432 100644
 --- a/e2fsck/rehash.c
 +++ b/e2fsck/rehash.c
 @@ -52,6 +52,25 @@
@@ -245,21 +250,24 @@ index 15993b3..610b3bf 100644
  	limits->count = 0;
  
  	return (struct ext2_dx_entry *) limits;
-@@ -865,8 +896,14 @@ void e2fsck_rehash_directories(e2fsck_t ctx)
+@@ -865,8 +896,17 @@ void e2fsck_rehash_directories(e2fsck_t ctx)
  			if (!ext2fs_u32_list_iterate(iter, &ino))
  				break;
  		}
-+#if 0
+-		if (ino == ctx->lost_and_found)
++
 +		/*
-+		 * lost+found must not be excluded from cleanups or else
-+		 * checksum errors won't get fixed.
++		 * If metadata_csum is enabled, then lost+found must not be
++		 * excluded from cleanups or else checksum errors won't get
++		 * fixed.
 +		 */
- 		if (ino == ctx->lost_and_found)
++		if (!EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
++				EXT4_FEATURE_RO_COMPAT_METADATA_CSUM) &&
++		    ino == ctx->lost_and_found)
  			continue;
-+#endif
++
  		pctx.dir = ino;
  		if (first) {
  			fix_problem(ctx, PR_3A_PASS_HEADER, &pctx);
--- 
-1.7.9.107.g97f9a
+
 

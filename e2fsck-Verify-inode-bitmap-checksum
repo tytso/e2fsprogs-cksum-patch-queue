@@ -2,19 +2,19 @@ e2fsck: verify inode bitmap checksum
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
-Rewrite the block bitmap when the checksum doesn't match.  This is ok
-since e2fsck will have already computed the correct inode bitmap.
+Rewrite the block bitmap when the checksum doesn't match.  This is
+ok since e2fsck will have already computed the correct inode bitmap.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
 ---
- e2fsck/pass5.c   |   64 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- e2fsck/problem.c |    5 ++++
- e2fsck/problem.h |    3 ++
- 3 files changed, 72 insertions(+), 0 deletions(-)
+ e2fsck/pass5.c   |   62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ e2fsck/problem.c |    5 +++++
+ e2fsck/problem.h |    3 +++
+ 3 files changed, 70 insertions(+)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index 148473c..9b9e8e5 100644
+index 8312fe0..c684b31 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
 @@ -27,6 +27,7 @@ static void check_block_bitmaps(e2fsck_t ctx);
@@ -34,7 +34,7 @@ index 148473c..9b9e8e5 100644
  	ext2fs_free_inode_bitmap(ctx->inode_used_map);
  	ctx->inode_used_map = 0;
  	ext2fs_free_inode_bitmap(ctx->inode_dir_map);
-@@ -74,6 +77,67 @@ void e2fsck_pass5(e2fsck_t ctx)
+@@ -74,6 +77,65 @@ void e2fsck_pass5(e2fsck_t ctx)
  	print_resource_track(ctx, _("Pass 5"), &rtrack, ctx->fs->io);
  }
  
@@ -47,7 +47,10 @@ index 148473c..9b9e8e5 100644
 +	int		nbytes;
 +	ext2_ino_t	ino_itr;
 +	errcode_t	retval;
-+	int		csum_flag = 0;
++
++	if (!EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
++					EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		return;
 +
 +	/* If bitmap is dirty from being fixed, checksum will be corrected */
 +	if (ext2fs_test_ib_dirty(ctx->fs))
@@ -62,14 +65,9 @@ index 148473c..9b9e8e5 100644
 +		fatal_error(ctx, 0);
 +	}
 +
-+	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
-+				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
-+		csum_flag = 1;
-+
 +	clear_problem_context(&pctx);
 +	for (i = 0; i < ctx->fs->group_desc_count; i++) {
-+		if (csum_flag && ext2fs_bg_flags_test(ctx->fs, i,
-+						      EXT2_BG_INODE_UNINIT))
++		if (ext2fs_bg_flags_test(ctx->fs, i, EXT2_BG_INODE_UNINIT))
 +			continue;
 +
 +		ino_itr = 1 + (i * (nbytes << 3));
@@ -103,7 +101,7 @@ index 148473c..9b9e8e5 100644
  				  blk64_t count)
  {
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index c772ba1..8bd5f6a 100644
+index 6fcb426..a1379db 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
 @@ -1694,6 +1694,11 @@ static struct e2fsck_problem problem_table[] = {
@@ -119,7 +117,7 @@ index c772ba1..8bd5f6a 100644
  
  	/* Recreate journal if E2F_FLAG_JOURNAL_INODE flag is set */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 66cb29f..ee690b4 100644
+index 3a0c025..86ec636 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
 @@ -1027,6 +1027,9 @@ struct problem_context {

@@ -7,15 +7,15 @@ verification fails.  This is ok because e2fsck has already computed
 the correct block bitmap.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
 ---
- e2fsck/pass5.c   |   65 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- e2fsck/problem.c |    5 ++++
- e2fsck/problem.h |    3 ++
- 3 files changed, 73 insertions(+), 0 deletions(-)
+ e2fsck/pass5.c   |   63 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ e2fsck/problem.c |    5 +++++
+ e2fsck/problem.h |    3 +++
+ 3 files changed, 71 insertions(+)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index 9b9e8e5..e291f12 100644
+index c684b31..0477e60 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
 @@ -28,6 +28,7 @@ static void check_inode_bitmaps(e2fsck_t ctx);
@@ -34,7 +34,7 @@ index 9b9e8e5..e291f12 100644
  
  	ext2fs_free_inode_bitmap(ctx->inode_used_map);
  	ctx->inode_used_map = 0;
-@@ -138,6 +140,69 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
+@@ -136,6 +138,67 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
  	ext2fs_free_mem(&buf);
  }
  
@@ -47,7 +47,10 @@ index 9b9e8e5..e291f12 100644
 +	int		nbytes;
 +	blk64_t		blk_itr;
 +	errcode_t	retval;
-+	int		csum_flag = 0;
++
++	if (!EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
++					EXT4_FEATURE_RO_COMPAT_METADATA_CSUM))
++		return;
 +
 +	/* If bitmap is dirty from being fixed, checksum will be corrected */
 +	if (ext2fs_test_bb_dirty(ctx->fs))
@@ -62,14 +65,9 @@ index 9b9e8e5..e291f12 100644
 +		fatal_error(ctx, 0);
 +	}
 +
-+	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
-+				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
-+		csum_flag = 1;
-+
 +	clear_problem_context(&pctx);
 +	for (i = 0; i < ctx->fs->group_desc_count; i++) {
-+		if (csum_flag && ext2fs_bg_flags_test(ctx->fs, i,
-+						      EXT2_BG_BLOCK_UNINIT))
++		if (ext2fs_bg_flags_test(ctx->fs, i, EXT2_BG_BLOCK_UNINIT))
 +			continue;
 +
 +		blk_itr = EXT2FS_B2C(ctx->fs,
@@ -105,7 +103,7 @@ index 9b9e8e5..e291f12 100644
  				  blk64_t count)
  {
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index 8bd5f6a..ddc535f 100644
+index a1379db..f1ccb19 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
 @@ -1699,6 +1699,11 @@ static struct e2fsck_problem problem_table[] = {
@@ -121,7 +119,7 @@ index 8bd5f6a..ddc535f 100644
  
  	/* Recreate journal if E2F_FLAG_JOURNAL_INODE flag is set */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index ee690b4..e42c4b6 100644
+index 86ec636..200ef3b 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
 @@ -1030,6 +1030,9 @@ struct problem_context {

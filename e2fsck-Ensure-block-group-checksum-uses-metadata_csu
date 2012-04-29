@@ -1,4 +1,4 @@
-e2fsck: ensure block group checksum uses metadata_csum algorithm
+e2fsck: ensure block group checksum uses
 
 From: "Darrick J. Wong" <djwong@us.ibm.com>
 
@@ -7,60 +7,20 @@ checksum.  Ensure that metadata_csum and uninit_bg flags are not set
 simultaneously, as part of pass 0.
 
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
 ---
- e2fsck/pass5.c   |   18 ++++++------------
+ e2fsck/pass5.c   |    6 ++----
  e2fsck/problem.c |    9 +++++++++
- e2fsck/problem.h |    7 ++++++-
+ e2fsck/problem.h |    8 ++++++++
  e2fsck/super.c   |   16 ++++++++++++++--
  e2fsck/unix.c    |    2 +-
- 5 files changed, 36 insertions(+), 16 deletions(-)
+ 5 files changed, 34 insertions(+), 7 deletions(-)
 
 diff --git a/e2fsck/pass5.c b/e2fsck/pass5.c
-index e291f12..f7735f7 100644
+index 0477e60..ff717b3 100644
 --- a/e2fsck/pass5.c
 +++ b/e2fsck/pass5.c
-@@ -88,7 +88,7 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
- 	int		nbytes;
- 	ext2_ino_t	ino_itr;
- 	errcode_t	retval;
--	int		csum_flag = 0;
-+	int		csum_flag;
- 
- 	/* If bitmap is dirty from being fixed, checksum will be corrected */
- 	if (ext2fs_test_ib_dirty(ctx->fs))
-@@ -103,9 +103,7 @@ static void check_inode_bitmap_checksum(e2fsck_t ctx)
- 		fatal_error(ctx, 0);
- 	}
- 
--	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
--				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
--		csum_flag = 1;
-+	csum_flag = ext2fs_has_group_desc_csum(ctx->fs);
- 
- 	clear_problem_context(&pctx);
- 	for (i = 0; i < ctx->fs->group_desc_count; i++) {
-@@ -149,7 +147,7 @@ static void check_block_bitmap_checksum(e2fsck_t ctx)
- 	int		nbytes;
- 	blk64_t		blk_itr;
- 	errcode_t	retval;
--	int		csum_flag = 0;
-+	int		csum_flag;
- 
- 	/* If bitmap is dirty from being fixed, checksum will be corrected */
- 	if (ext2fs_test_bb_dirty(ctx->fs))
-@@ -164,9 +162,7 @@ static void check_block_bitmap_checksum(e2fsck_t ctx)
- 		fatal_error(ctx, 0);
- 	}
- 
--	if (EXT2_HAS_RO_COMPAT_FEATURE(ctx->fs->super,
--				       EXT4_FEATURE_RO_COMPAT_GDT_CSUM))
--		csum_flag = 1;
-+	csum_flag = ext2fs_has_group_desc_csum(ctx->fs);
- 
- 	clear_problem_context(&pctx);
- 	for (i = 0; i < ctx->fs->group_desc_count; i++) {
-@@ -378,8 +374,7 @@ static void check_block_bitmaps(e2fsck_t ctx)
+@@ -372,8 +372,7 @@ static void check_block_bitmaps(e2fsck_t ctx)
  		goto errout;
  	}
  
@@ -70,7 +30,7 @@ index e291f12..f7735f7 100644
  redo_counts:
  	had_problem = 0;
  	save_problem = 0;
-@@ -664,8 +659,7 @@ static void check_inode_bitmaps(e2fsck_t ctx)
+@@ -656,8 +655,7 @@ static void check_inode_bitmaps(e2fsck_t ctx)
  		goto errout;
  	}
  
@@ -81,7 +41,7 @@ index e291f12..f7735f7 100644
  	had_problem = 0;
  	save_problem = 0;
 diff --git a/e2fsck/problem.c b/e2fsck/problem.c
-index f4021a5..f055d2b 100644
+index febdecb..a310fdb 100644
 --- a/e2fsck/problem.c
 +++ b/e2fsck/problem.c
 @@ -433,6 +433,15 @@ static struct e2fsck_problem problem_table[] = {
@@ -101,10 +61,10 @@ index f4021a5..f055d2b 100644
  
  	/* Pass 1: Checking inodes, blocks, and sizes */
 diff --git a/e2fsck/problem.h b/e2fsck/problem.h
-index 8716e11..703fb41 100644
+index f87f4e8..db135dc 100644
 --- a/e2fsck/problem.h
 +++ b/e2fsck/problem.h
-@@ -250,6 +250,12 @@ struct problem_context {
+@@ -250,6 +250,13 @@ struct problem_context {
  #define PR_0_CHECK_DESC_FAILED			0x000045
  
  /*
@@ -113,18 +73,19 @@ index 8716e11..703fb41 100644
 + */
 +#define PR_0_META_AND_GDT_CSUM_SET		0x000046
 +
++
 +/*
   * Pass 1 errors
   */
  
-@@ -604,7 +610,6 @@ struct problem_context {
- /* Error adjusting EA refcount */
- #define PR_1B_ADJ_EA_REFCOUNT	0x011007
+@@ -576,6 +583,7 @@ struct problem_context {
+ /* ea block passes checks, but checksum invalid */
+ #define PR_1_EA_BLOCK_ONLY_CSUM_INVALID        0x01006C
  
--
- /* Pass 1C: Scan directories for inodes with dup blocks. */
- #define PR_1C_PASS_HEADER	0x012000
- 
++
+ /*
+  * Pass 1b errors
+  */
 diff --git a/e2fsck/super.c b/e2fsck/super.c
 index f83f74f..4c61c4c 100644
 --- a/e2fsck/super.c
@@ -159,10 +120,10 @@ index f83f74f..4c61c4c 100644
  		pctx.group = i;
  
 diff --git a/e2fsck/unix.c b/e2fsck/unix.c
-index 8cdac27..262a7ff 100644
+index 2db3284..4c866e6 100644
 --- a/e2fsck/unix.c
 +++ b/e2fsck/unix.c
-@@ -1703,7 +1703,7 @@ no_journal:
+@@ -1711,7 +1711,7 @@ no_journal:
  	}
  
  	if ((run_result & E2F_FLAG_CANCEL) == 0 &&
