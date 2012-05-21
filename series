@@ -1,4 +1,4 @@
-# to applied against 2788cc879bbe667d28277e1d660b7e56514e5b30 (post v1.42.2)
+# to applied against 108e6581fccaf8dd2f8a01d2eb5a02b0478240c7 (post v1.42.3)
 
 libext2fs-Read-and-write-full-size-inodes
 libext2fs-Change-ext4-on-disk-layout-to-support-meta
@@ -58,7 +58,6 @@ mke2fs-Enable-metadata_csum-on-ext4dev-filesystems
 # checksum patches
 add-EXT4-FEATURE_INCOMPAT_INLINE_DATA-flag
 mke2fs-make-it-support-inline-data-feature
-libext2fs-add-inline_data_feature
 mke2fs-add-inline_data-feature-in-mke2fs-manpage
 libext2fs-add-ext2fs_find_entry_ext_attr-function
 libext2fs-add-EXT4_INLINE_DATA_FL-for-inode
