@@ -35,7 +35,7 @@ index 9e33306..4baba54 100644
  #endif
  
 diff --git a/e2fsck/recovery.c b/e2fsck/recovery.c
-index 8f55411..d7c470e 100644
+index 113dedb..f7497ad 100644
 --- a/e2fsck/recovery.c
 +++ b/e2fsck/recovery.c
 @@ -395,6 +395,25 @@ static int jbd2_commit_block_csum_verify(journal_t *j, void *buf)
@@ -55,8 +55,8 @@ index 8f55411..d7c470e 100644
 +				      sizeof(j->j_superblock->s_uuid));
 +	calculated = ext2fs_crc32c_le(calculated, (__u8 *)&sequence,
 +				      sizeof(sequence));
-+	calculated = ext2fs_crc32c_le(calculated, buf, j->j_blocksize);
-+	provided = ext2fs_be32_to_cpu(tag->t_checksum);
++	calculated = ext2fs_crc32c_le(calculated, buf, j->j_blocksize) & 0xffff;
++	provided = ext2fs_be16_to_cpu(tag->t_checksum);
 +
 +	return provided == ext2fs_cpu_to_be32(calculated);
 +}
@@ -85,7 +85,7 @@ index 8f55411..d7c470e 100644
  					 * data being restored */
  					nbh = __getblk(journal->j_fs_dev,
 diff --git a/lib/ext2fs/kernel-jbd.h b/lib/ext2fs/kernel-jbd.h
-index 570bfa6..e9d725d 100644
+index accd29c..8e0b4d6 100644
 --- a/lib/ext2fs/kernel-jbd.h
 +++ b/lib/ext2fs/kernel-jbd.h
 @@ -261,6 +261,36 @@ typedef struct journal_superblock_s
@@ -125,6 +125,3 @@ index 570bfa6..e9d725d 100644
  #ifdef __KERNEL__
  
  #include <linux/fs.h>
--- 
-1.7.9.107.g97f9a
-

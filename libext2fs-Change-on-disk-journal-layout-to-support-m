@@ -8,11 +8,66 @@ checksumming.
 Signed-off-by: Darrick J. Wong <djwong@us.ibm.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 ---
- lib/ext2fs/kernel-jbd.h |   30 +++++++++++++++++++++++++++---
- 1 files changed, 27 insertions(+), 3 deletions(-)
+ debugfs/logdump.c       |    2 +-
+ e2fsck/recovery.c       |    6 +++---
+ lib/ext2fs/jfs_compat.h |    2 ++
+ lib/ext2fs/kernel-jbd.h |   32 ++++++++++++++++++++++++++++----
+ 4 files changed, 34 insertions(+), 8 deletions(-)
 
+diff --git a/debugfs/logdump.c b/debugfs/logdump.c
+index 6e39b74..4a09bdb 100644
+--- a/debugfs/logdump.c
++++ b/debugfs/logdump.c
+@@ -501,7 +501,7 @@ static void dump_descriptor_block(FILE *out_file,
+ 			break;
+ 
+ 		tag_block = be32_to_cpu(tag->t_blocknr);
+-		tag_flags = be32_to_cpu(tag->t_flags);
++		tag_flags = be16_to_cpu(tag->t_flags);
+ 
+ 		if (!(tag_flags & JFS_FLAG_SAME_UUID))
+ 			offset += 16;
+diff --git a/e2fsck/recovery.c b/e2fsck/recovery.c
+index b669941..aeb44d4 100644
+--- a/e2fsck/recovery.c
++++ b/e2fsck/recovery.c
+@@ -193,10 +193,10 @@ static int count_tags(journal_t *journal, struct buffer_head *bh)
+ 
+ 		nr++;
+ 		tagp += tag_bytes;
+-		if (!(tag->t_flags & cpu_to_be32(JFS_FLAG_SAME_UUID)))
++		if (!(tag->t_flags & cpu_to_be16(JFS_FLAG_SAME_UUID)))
+ 			tagp += 16;
+ 
+-		if (tag->t_flags & cpu_to_be32(JFS_FLAG_LAST_TAG))
++		if (tag->t_flags & cpu_to_be16(JFS_FLAG_LAST_TAG))
+ 			break;
+ 	}
+ 
+@@ -488,7 +488,7 @@ static int do_one_pass(journal_t *journal,
+ 				unsigned long io_block;
+ 
+ 				tag = (journal_block_tag_t *) tagp;
+-				flags = be32_to_cpu(tag->t_flags);
++				flags = be16_to_cpu(tag->t_flags);
+ 
+ 				io_block = next_log_block++;
+ 				wrap(journal, next_log_block);
+diff --git a/lib/ext2fs/jfs_compat.h b/lib/ext2fs/jfs_compat.h
+index 7b8aafd..7947ef5 100644
+--- a/lib/ext2fs/jfs_compat.h
++++ b/lib/ext2fs/jfs_compat.h
+@@ -17,6 +17,8 @@
+ 
+ #define cpu_to_be32(n) htonl(n)
+ #define be32_to_cpu(n) ntohl(n)
++#define cpu_to_be16(n) htons(n)
++#define be16_to_cpu(n) ntohs(n)
+ 
+ typedef unsigned int tid_t;
+ typedef struct journal_s journal_t;
 diff --git a/lib/ext2fs/kernel-jbd.h b/lib/ext2fs/kernel-jbd.h
-index 066c031..570bfa6 100644
+index 066c031..accd29c 100644
 --- a/lib/ext2fs/kernel-jbd.h
 +++ b/lib/ext2fs/kernel-jbd.h
 @@ -114,12 +114,24 @@ typedef struct journal_header_s
@@ -40,11 +95,14 @@ index 066c031..570bfa6 100644
   */
  struct commit_header {
  	__u32		h_magic;
-@@ -141,11 +153,17 @@ typedef struct journal_block_tag_s
+@@ -139,13 +151,19 @@ struct commit_header {
+ typedef struct journal_block_tag_s
+ {
  	__u32		t_blocknr;	/* The on-disk block number */
- 	__u32		t_flags;	/* See below */
+-	__u32		t_flags;	/* See below */
++	__u16		t_checksum;	/* truncated crc32c(uuid+seq+block) */
++	__u16		t_flags;	/* See below */
  	__u32		t_blocknr_high; /* most-significant high 32bits. */
-+	__u32		t_checksum;	/* crc32c(uuid+seq+block) */
  } journal_block_tag_t;
  
  #define JBD_TAG_SIZE64 (sizeof(journal_block_tag_t))
@@ -94,6 +152,3 @@ index 066c031..570bfa6 100644
  
  /* Features known to this kernel version: */
  #define JFS_KNOWN_COMPAT_FEATURES	0
--- 
-1.7.9.107.g97f9a
-
